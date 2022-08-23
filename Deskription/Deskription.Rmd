@@ -1,0 +1,455 @@
+---
+title: "Deskription Survey Qualitaet"
+output:
+  pdf_document:
+    toc: yes
+    number_sections: yes
+editor_options: 
+  markdown: 
+    wrap: 72
+
+---
+
+```{r global_options, include=FALSE, dpi = 400}
+knitr::opts_chunk$set(fig.height=8, fig.width=8,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r, source_auswertungen, echo=FALSE, warning=FALSE, message=FALSE, include = FALSE}
+load("C:/Uni/13. Semester/Praktikum/R/Aufbereitung/data.RData")
+library(ggplot2)
+library(dplyr)
+library(grid)
+library(gridExtra)
+library(fitdistrplus)
+library(flextable)
+library(cowplot)
+library(knitr)
+library(tidyr)
+library(ineq)
+
+df_sub <- df %>% dplyr::select(quality, Language, Domain, Concept, Social.Desirability, Centrality, Reference.period, Formulation.of.the.request.for.an.answer..basic.choice,
+              WH.word.used.in.the.request, Request.for.an.answer.type, Use.of.gradation, Balance.of.the.request, Presence.of.encouragement.to.answer,
+              Emphasis.on.subjective.opinion.in.request, Use.of.stimulus.or.statement.in.the.request, Absolute.or.comparative.judgment, Response.scale..basic.choice,
+              Number.of.categories, Theoretical.range.of.the.concept.bipolar.unipolar, Range.of.the.used.scale.bipolar.unipolar, Symmetry.of.response.scale,
+              Neutral.category, Number.of.fixed.reference.points, Don.t.know.option, Interviewer.instruction, Respondent.instruction, Extra.information.or.definition,
+              Knowledge.provided, Introduction.available., Request.present.in.the.introduction, Number.of.sentences.in.introduction, Number.of.words.in.introduction,
+              Number.of.sentences.in.introduction, Number.of.sentences.in.the.request, Number.of.words.in.request, Total.number.of.nouns.in.request.for.an.answer,
+              Total.number.of.abstract.nouns.in.request.for.an.answer, Total.number.of.syllables.in.request, Number.of.subordinate.clauses.in.request,
+              Number.of.syllables.in.answer.scale, Total.number.of.nouns.in.answer.scale, Total.number.of.abstract.nouns.in.answer.scale,
+              Showcard.or.other.visual.aids.used, Horizontal.or.vertical.scale, Overlap.of.scale.labels.and.categories, Numbers.or.letters.before.the.answer.categories,
+              Scale.with.only.numbers.or.numbers.in.boxes, Start.of.the.response.sentence.on.the.visual.aid, Request.on.the.visual.aid,
+              Picture.provided., Computer.assisted, Interviewer, Visual.or.oral.presentation, Position, Labels.of.categories,
+              Labels.with.short.text.or.complete.sentences, Order.of.the.labels, Correspondence.between.labels.and.numbers.of.the.scale, Number.of.subordinated.clauses.in.introduction, Information.about.the.opinion.of.other.people, Study)
+
+
+vars <- data.frame( namen = names(df_sub), 
+                    klasse = unlist(lapply(df_sub, class)),
+                    Kategorien = unlist(ifelse(lapply(df_sub, is.factor), lapply(df_sub, function(x) length(levels(x))), NA)))
+```
+
+# Einführung
+Outcome des Projekts *Surveyqualität* ist die Qualität von Fragebögen, welche sich aus der Reliabilität und Validität ($q^2 = r^2 * v^2$) zusammensetzt. Diese wurden durch ein Strukturgleichungsmodell  *Multitrait-Multimethod* (MTMM) berechnet, vor allem mithilfe von großen Befragungen des *European Social Surveys* (ESS).
+
+Die Qualität, sowie die Reliabilität und Validität sind hierbei stetige Merkmale, welche im Bereich $[0;1]$ liegen.
+
+Um die Qualität von neuen Surveyfragen zu prognostizieren wurden über die Zeit mehrere Modelle berechnet, *Survey Quality Predictor* (SQP). Die erste Version dieser Vorhersage wurde mittels linearer Regression berechnet. In der zweiten Version mittels *random forest*. Die dritte Version wiederum mittels *random forest* (Schweisthal).
+
+Um bei der Erstellung neuer Fragebögen den Forschern unter die Arme zu greifen, soll nun ein Regressionsmodell berechnet werden, damit Aussagen wie "Falls Sie eine Einleitung zu Ihrer Frage hinzufügen erhöht sich die Qualität um xy". Also ein interpretierbares Modell.
+\newpage
+
+# Deskription
+
+Im folgenden ein kurzer Überblick über alle Parameter, welche sich im Datensatz befinden und relevant zur Berechnung sind.
+
+## Gesamter Datensatz
+Der Datensatz besteht aus **`r length(na.omit(df$quality))` Beobachtungen** (mit NAs: `r nrow(df)`), **`r nrow(vars) `** zu verwendende **Variablen** (Outcome + Einfluss), wobei **`r length(vars$klasse[which(vars$klasse == "factor")])`** Einflussvariablen **Nominal- und Ordinal** und **`r length(vars$klasse[which(vars$klasse == "numeric")])-1`** Einflussvariablen **Metrisch** skalliert sind. 
+
+```{r}
+f <- kable(data.frame(name = c("Gesamt", "Nominal- / Ordinal", "Metrisch") ,count = c(nrow(vars), length(vars$klasse[which(vars$klasse == "factor")]), length(vars$klasse[which(vars$klasse == "numeric")])-1)), col.names = c("Datensatz", "Anzahl"), align = c("l", "c"), caption = "Variablen im gesamten Datensatz nach Skalenniveau")
+f
+```
+
+## Nominal -/ Ordinalskallierte Einflussgrößen
+Von den `r nrow(vars[which(vars$klasse == "factor"),])` Nominal -/ Ordinalskallierten Einflussgrößen sind die meisten **binär** kodiert (**`r nrow(vars[which(vars$Kategorien == 2),])`**), fast alle mit **weniger als 10 Kategorien** (**`r nrow(vars[which(vars$Kategorien < 10),])`**) und **`r nrow(vars[which(vars$Kategorien >= 10),])`** mit **mehr als 10 Kategorien**.
+
+```{r}
+f <- kable(data.frame(Anzahl_Kat = c(2,3,4,5,6,11,29), Haufen = c(nrow(vars[which(vars$Kategorien == 2),]), nrow(vars[which(vars$Kategorien == 3),]), nrow(vars[which(vars$Kategorien == 4),]), nrow(vars[which(vars$Kategorien == 5),]), nrow(vars[which(vars$Kategorien == 6),]), nrow(vars[which(vars$Kategorien == 11),]), nrow(vars[which(vars$Kategorien == 29),]))), col.names = c("Anzahl an Kategorien", "Häufigkeit im Datensatz"), align = "c", caption = "Häufigkeit von Nominal -/ Ordinalskallierten Variablen im Datensatz")
+
+f
+```
+
+Der Einfluss der Spalte mit **`r max(vars$Kategorien, na.rm = T)`** Kategorien (**Sprache**) ist von großer Wichtigkeit, da dieser verwendet werden soll, um ***random intercepts*** zu implementieren (hierarchische Struktur soll beachtete werden: Studien genestet in Experimenten in Ländern / Sprache).
+
+Eine kleine Übersicht über die Daten können die folgenden Histogramme geben.
+
+### Binäre Einflüsse - Unabhängig von Filtern 
+
+```{r histogramm 1, fig.cap="Binäre Einlussgrößen, welche nicht in Filtern vorkommen"}
+ggplot(df_sub %>% dplyr::select(Use.of.stimulus.or.statement.in.the.request, Absolute.or.comparative.judgment, Interviewer.instruction, Respondent.instruction, Computer.assisted, Interviewer, Visual.or.oral.presentation) %>%  gather(), aes(value, fill = value))+
+  geom_histogram(stat = "count", show.legend = F, color = "grey25")+
+  scale_x_discrete(guide = guide_axis(n.dodge=5))+
+  facet_wrap(~key, scales = "free_x")+
+  ggtitle("Binäre Einflüsse - unabhängig von Filtern")
+```
+
+### Nicht binäre Einflüsse - Unabhängig von Filtern
+
+```{r histogramm2, fig.cap="Nicht binäre Einlussgrößen, welche nicht in Filtern vorkommen"}
+ggplot(df_sub %>% dplyr::select(Language, Domain, Concept, Centrality,Reference.period,Don.t.know.option) %>%  gather(), aes(value, fill = value))+
+  geom_histogram(stat = "count", show.legend = F, color = "grey25")+
+  scale_x_discrete(guide = guide_axis(n.dodge=5))+
+  facet_wrap(~key, scales = "free_x")+
+  ggtitle("Nicht binäre Einflüsse - unabhängig von Filtern")
+```
+
+## Filter
+
+Im folgenden Abschnitt gehe ich etwas näher auf die Filter ein. Die Grafiken sind aus *Codebook Routing* entstanden, in dem beschrieben wird, in was für einer Reihenfolge einzelne Fragebögen bewertet werden sollten.
+
+```{r, out.height="1\\linewidth", include=TRUE, fig.align="center", echo=FALSE, out.extra='angle=90', fig.cap="Übersicht über codebook routing mit eingezeichneten Filtern"}
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/Zusammenfassung/Zusammenfassung klein - Kopie 1.pdf")
+```
+
+\newpage
+
+### Erster Filter
+Der erste Filter ist **Formulation of the request for an answer basic choice**. Nachdem diese Spezifikation mit **indirect request** oder **direct request** "beantwortet" wurde, werden mehrere weitere Spezifikationen zu den **requests** abgefragt.
+
+```{r histogramm3, fig.cap="Variablen innerhalb des ersten Filters"}
+ggplot(df_sub %>% dplyr::select(Formulation.of.the.request.for.an.answer..basic.choice, WH.word.used.in.the.request, Request.for.an.answer.type, Use.of.gradation, Balance.of.the.request, Presence.of.encouragement.to.answer, Emphasis.on.subjective.opinion.in.request,Information.about.the.opinion.of.other.people) %>%  gather(), aes(value, fill = value))+
+  geom_histogram(stat = "count", show.legend = F, color = "grey25")+
+  facet_wrap(~key, scales = "free_x")+
+  ggtitle("Filter 1 mit nachfolgenden Spezifikationen")+
+  scale_x_discrete(guide = guide_axis(n.dodge=5))
+
+```
+
+Genauere Übersicht über das *Routing*:
+
+```{r, out.width="1\\linewidth", include=TRUE, fig.align="center", fig.cap=c("Akkuratere Übersicht über den ersten Filter, Teil 1", "Akkuratere Übersicht über den ersten Filter, Teil 2", "Akkuratere Übersicht über den ersten Filter, Teil 3"), echo=FALSE}
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/4/Vier 1.pdf")
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/5/fuenf 1.pdf")
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/6/sechs 1.pdf")
+
+```
+
+\newpage
+### Zweiter Filter
+Der zweite Filter ist **Response scale basic choice**. Nachdem diese Spezifikation mit **More than 2 categories scalec**, **More steps procedures**, **Magnitude estimation** oder **Line production** "beantwortet" wurde, werden mehrere weitere Spezifikationen zu den **response scales** abgefragt.
+
+Diese Filter teilt sich jedoch später noch weiter auf mithilfe vom Filter **Theoretical range of concept bipolar / unipolar** mittels "Antwort" **Theoretically bipolar** und dieser Filter....Filter... spaltet sich nochmals in **Range of the used scale bipolar / unipolar** mittels **Bipolar** auf.
+
+```{r histogramm4, fig.cap= "Variablen innerhalb des zweiten Filters"}
+ggplot(df_sub %>% dplyr::select(Response.scale..basic.choice, Number.of.categories, Theoretical.range.of.the.concept.bipolar.unipolar, Range.of.the.used.scale.bipolar.unipolar, Symmetry.of.response.scale, Neutral.category, Number.of.fixed.reference.points) %>%  gather(), aes(value, fill = value))+
+  geom_histogram(stat = "count", show.legend = F, color = "grey25")+
+  facet_wrap(~key, scales = "free_x")+
+  ggtitle("Filter 2 mit nachfolgenden Spezifikationen")+
+  scale_x_discrete(guide = guide_axis(n.dodge=5))
+
+```
+
+Genauere Übersicht über das *Routing*:
+
+```{r, out.width="1\\linewidth", include=TRUE, fig.align="center", fig.cap=c("Akkuratere Übersicht über den zweiten Filter, Teil 1", "Akkuratere Übersicht über den zweiten Filter, Teil 2", "Akkuratere Übersicht über den zweiten Filter, Teil 3"), echo=FALSE}
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/6/sechs 2.pdf")
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/7/sieben 1.pdf")
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/8/acht 1.pdf")
+```
+
+\newpage
+
+### Dritter Filter
+Der dritte Filter ist **Extra information or definition**. Nachdem diese Spezifikation mit **Present Extra information** "beantwortet" wurde, liegt in diesem "Filternpfad" lediglich **Knowledge provided**.
+
+```{r histogramm5,  fig.cap = "Variablen innerhalb des dritten Filters"}
+ggplot(df_sub %>% dplyr::select(Extra.information.or.definition, Knowledge.provided) %>%  gather(), aes(value, fill = value))+
+  geom_histogram(stat = "count", show.legend = F, color = "grey25")+
+  facet_wrap(~key, scales = "free_x")+
+  ggtitle("Filter 3 mit nachfolgenden Spezifikationen")+
+  scale_x_discrete(guide = guide_axis(n.dodge=5))
+
+```
+
+Genauere Übersicht über das *Routing*:
+
+```{r, out.width="1\\linewidth", include=TRUE, fig.align="center", fig.cap="Akkuratere Übersicht über den dritten Filter", echo=FALSE}
+
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/8/acht 2.pdf")
+
+```
+
+\newpage
+
+### Vierter Filter
+Der vierte Filter lautet **Introduction available**. Nachdem diese Spezifikation mit **Available** "beantwortet" wurde, werden mehrere weitere Spezifikationen zur **Introduction** abgefragt.
+
+```{r histogramm6,  fig.cap = "Variablen innerhalb des vierten Filters"}
+ggplot(df_sub %>% dplyr::select(Introduction.available., Request.present.in.the.introduction, Number.of.sentences.in.introduction, Number.of.words.in.introduction, Number.of.subordinated.clauses.in.introduction) %>%  gather(), aes(value, fill = value))+
+  geom_histogram(stat = "count", show.legend = F, color = "grey25")+
+  facet_wrap(~key, scales = "free_x")+
+  ggtitle("Filter 4 mit nachfolgenden Spezifikationen")+
+  scale_x_discrete(guide = guide_axis(n.dodge=5))
+
+```
+
+```{r, out.width="1\\linewidth", include=TRUE, fig.align="center", fig.cap=c("Akkuratere Übersicht über den vierten Filter, Teil 1", "Akkuratere Übersicht über den vierten Filter, Teil 2"), echo=FALSE}
+
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/8/acht 3.pdf")
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/9/neun 1.pdf")
+```
+
+\newpage
+
+### Fünfter Filter
+Der fünfte Filter lautet **Showcard or other visual aids**. Nachdem diese Spezifikation mit **Used showcard** "beantwortet" wurde, werden mehrere weitere Spezifikationen zu diesen abgefragt.
+
+Ähnlich der Filter 2 teilt dieser Filter sich mithilfe vom Filter **Numbers or letters before the answer categories** mittels **numbers** oder **letters** auf.
+
+```{r histogramm7,  fig.cap = "Variablen innerhalb des fünften Filters"}
+ggplot(df_sub %>% dplyr::select(Showcard.or.other.visual.aids.used, Horizontal.or.vertical.scale, Overlap.of.scale.labels.and.categories, Numbers.or.letters.before.the.answer.categories, Scale.with.only.numbers.or.numbers.in.boxes, Start.of.the.response.sentence.on.the.visual.aid, Request.on.the.visual.aid, Picture.provided.) %>%  gather(), aes(value, fill = value))+
+  geom_histogram(stat = "count", show.legend = F, color = "grey25")+
+  facet_wrap(~key, scales = "free_x")+
+  ggtitle("Filter 5 mit nachfolgenden Spezifikationen")+
+  scale_x_discrete(guide = guide_axis(n.dodge=5))
+
+```
+
+```{r, out.width="1\\linewidth", include=TRUE, fig.align="center", fig.cap = "Akkuratere Übersicht über den fünften Filter", echo=FALSE}
+
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/Generelle Informationen/Plots/Plots Daten Routing/10/Zehn 1.pdf")
+```
+
+\newpage
+\newpage
+
+## Metrisch Skallierte Einflussgrößen
+Im Gegensatz zu den Nominal -/ Ordinalskallierten Einflussgrößen gibt es wenige **metrischskallierte** Einflüsse (**Anteil** von **`r round((length(vars$klasse[which(vars$klasse == "numeric")])-1) / nrow(vars),2)`**), welche zusätzlich meist in $\mathbb{N}$ leben. 
+
+```{r histogramm8, cap.fig = "Übersicht über alle metrisch skallierten Einflussgrößen"}
+ggplot(df_sub %>% dplyr::select(Number.of.categories, Number.of.fixed.reference.points, Number.of.sentences.in.introduction, Number.of.words.in.introduction, Number.of.sentences.in.the.request, Number.of.words.in.request, Total.number.of.nouns.in.request.for.an.answer, Total.number.of.abstract.nouns.in.request.for.an.answer, Total.number.of.syllables.in.request, Number.of.subordinate.clauses.in.request, Number.of.syllables.in.answer.scale, Total.number.of.nouns.in.answer.scale, Total.number.of.abstract.nouns.in.answer.scale, Position, Number.of.subordinated.clauses.in.introduction, Information.about.the.opinion.of.other.people) %>%  gather(), aes(value, fill = value))+
+  geom_area(stat = "count", show.legend = F)+
+  facet_wrap(~key, scales = "free_x")+
+  ggtitle("Übersicht über alle metrischen Einflussgrößen")+
+  scale_x_discrete(guide = guide_axis(n.dodge=5))
+
+```
+
+\newpage
+
+
+## Outcome: Qualität
+Wie oben beschrieben setzt sich die Qualität aus der Reliabilität und der Validität zusammen. Im folgenden Scatterplot kann man erkennen, dass für die Validität und die Reliabilität nur bestimmte ("diskrete") Werte angenommen werden, was sich bei Werten > 0.75 der Qualität auch bemerkbar macht.
+
+
+```{r ReliabilitaetValiditaet, fig.width= 8, fig.height= 6, fig.cap="Verteilung der Outcome Variable, sowie den zugehörigen Einflüssen Reliabilität und Validität"}
+rv <- ggplot(df, aes(x = reliability.r.2., y = validity.v.2., color = quality))+
+  geom_point()+
+  labs(title = "Validität und Reliabilität im gesamten Datensatz", x = expression(paste(Reliabilität^{2})), y = expression(paste(Validität^{2})))+
+  ggplot2::xlim(c(0,1))+
+  theme(plot.title = element_text(hjust = 0.5, size = 16),
+        plot.subtitle = element_text(hjust = 0.5))+
+  guides(color=guide_legend(title="Qualität"))
+
+q <- ggplot(df,aes(x = quality, y = rep(0, nrow(df)), color = quality))+
+  geom_point()+
+  xlab("Qualität")+
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.title.y = element_blank())+
+  ggplot2::xlim(c(0,1))+
+  guides(color=guide_legend(title="Qualität"))
+
+plot_grid(rv,q,nrow = 2, rel_heights = c(2/3, 1/3), align = "v")
+```
+
+\newpage
+
+
+[//]: # (Um später ein ***Generalisiertes lineares gemischtes Modell*** (GLMM) zu berechnen wurden die zwei folgenden Grafiken erstellt. Hier wird die Qualität versucht mithilfe bestimmter Verteilungen (**Beta, Normal und Weibull** - Exponentialfamilien) anzupassen.)
+
+```{r}
+#df <- df[!is.na(df$quality),]
+#m <- fitdist(df$quality, "beta", method = "mme")
+#m1 <- fitdist(df$quality, dist = "norm")
+#m2 <- fitdist(df$quality, dist = "weibull")
+#denscomp(list(m,m1,m2), xlab = "Qualität")
+
+#qqcomp(list(m,m1,m2), xlab = "Qualität")
+
+
+```
+
+
+```{r AICBIC}
+#f <- flextable(data.frame(Verteilung = c("Beta", "Normal", "Weibull"), AIC = c(m$aic, m1$aic, #m2$aic), BIC = c(m$bic, m1$bic, m2$bic)))
+#f <- colformat_double(f,digits = 2)
+#f
+```
+
+[//]: # (Auch wenn der AIC und BIC für die Betaverteilung unbekannt sind ($\infty$ ?), scheint die #Betaverteilung (visuell) die beste Wahl zu sein. Dies liegt vorallem daran, dass die Daten #linksschief / rechtssteil sind und nicht symmetrisch um `r round(mean(df_sub$quality, na.rm = T),2)` #liegen und weiterhin - im Beta Fall - Werte im offenen Intervall (0,1) nicht überschritten werden. #Problematisch ist allerdings hierbei, dass Werte von 0 (insgesamt `r length(which(df$quality == 0))` #mal) und 1 (insgesamt `r length(which(df$quality == 1))` mal) bei der Qualität angenommen werden.) 
+
+
+# Modelle
+Ziel der Modelle soll sein, dass diese interpretiertbar sind. Deshalb haben wir uns für Regressionsmodelle entschieden.
+
+Da es viele Beobachtungen gibt (s.o.) kann ein Modell - im Optimalfall - nach der Daumenregel *eine Einflussvariable pro 10 Beobachtungen* insgesamt $\sim$ 600 Variablen beinhalten.
+
+Die hierarchische Struktur der Daten sollte für die Einflüsse **Studien**, **Experimente** und **Sprache** beibehalten werden. Diese verhalten sich folgendermaßen:
+
+**Studien**
+
+```{r Studien, fig.cap="Häufigkeitsverteilung der Studien"}
+df_sub <- df_sub %>% filter(!is.na(quality))
+
+ggplot(df_sub, aes(x = Study, fill = Study))+
+  geom_histogram(stat = "count", color = "grey25")+
+  scale_x_discrete(guide = guide_axis(n.dodge=8), labels = c(unique(df_sub$Study)[1:7], rep("", 79)))+
+  theme(legend.position = "none")
+
+```
+
+Es ist erkennbar, dass einige wenige Studien (8) (ausschließlich ESS) auf `r df_sub %>% group_by(Study) %>% summarise(n = n()) %>% filter(Study %in% c("ESS Round 1", "ESS Round 2", "ESS Round 3", "ESS Round 4", "ESS Round 5", "ESS Round 6", "ESS Round 7", "ESS Round 8")) %>% summarise(sum(n))` Beobachtungen kommen. Somit wäre es eventuell sinnvoll alle restlichen Studien als "restliche" zusammenzufassen mit `r df_sub %>% group_by(Study) %>% summarise(n = n()) %>% filter(!(Study %in% c("ESS Round 1", "ESS Round 2", "ESS Round 3", "ESS Round 4", "ESS Round 5", "ESS Round 6", "ESS Round 7", "ESS Round 8"))) %>% summarise(sum(n))` Beobachtungen. Daraus resultieren 9 Studien.
+
+**Sprachen**
+
+```{r Sprachen, fig.cap = "Häufigkeitsverteilung der Sprachen"}
+ggplot(df_sub, aes(x = Language, fill = Language))+
+  geom_histogram(stat = "count", color = "grey25")+
+  scale_x_discrete(guide = guide_axis(n.dodge=5))+
+  theme(legend.position = "none")
+
+```
+
+
+Im Gegensatz zu den Studien scheinen die Sprachen gleichverteilter zu sein. Jedoch gibt es hierbei `r df_sub %>% group_by(Language) %>% summarise(n = n()) %>% filter(n > 300) %>% summarise(n_1 = n())` Sprachen, welche über 300 mal auftreten. Der Anteil dieser Sprachen macht `r round(df_sub %>% group_by(Language) %>% summarise(n = n()) %>% filter(n > 300) %>% summarise(sum(n)) / df_sub %>% count(),2)` der Beobachtungen aus.
+
+## Genestete Variablen
+Im Modell soll später berücksichtigt werden, dass eine hierarchische Struktur der Daten existiert. Diese ist wie folgt aufgebaut: Studien in Experimenten in Ländern.  Diese sollten heterogen verteilt sein, d.h. es sollte beispielsweise für **ESS 1**  nicht nur ein Land repräsentiert sein.
+
+```{r fig.cap = "Verteilung der Länder in Studien"}
+df_sub$Study[which(!(df_sub$Study %in% c("ESS Round 1",
+                 "ESS Round 2", "ESS Round 3",
+                 "ESS Round 4", "ESS Round 5",
+                 "ESS Round 6", "ESS Round 7", "ESS Round 8")))] <- "Other"
+
+
+ggplot(df_sub, aes(x = Study, fill = Language))+
+  geom_bar(position = "fill", color = "grey25")+
+  scale_x_discrete(guide = guide_axis(n.dodge=3))+
+  labs(x = "Studie", y = "%", fill = "Sprache")
+```
+
+In der oberen Grafik erscheinen die Länder in den **ESS Studien** gleichverteilt zu sein. Eine Ausnahme sind hierbei die **Other** Studien, welche vor allem in der Niederlande gemacht wurden.
+
+Um die Gleichverteilung ein wenig näher zu betrachten werden im folgenden die Lorenzkurven der einzelnen Studien visualisiert.
+
+```{r fig.cap = "Lorenzkurven bezüglich der Häufigkeit von Ländern, seperat berechnet für jede Studie"}
+equ <- df_sub %>% group_by(Study, Language) %>% summarise(n = n()) 
+
+equ1 <- equ %>% filter(Study == "ESS Round 1")
+equ2 <- equ %>% filter(Study == "ESS Round 2")
+equ3 <- equ %>% filter(Study == "ESS Round 3")
+equ4 <- equ %>% filter(Study == "ESS Round 4")
+equ5 <- equ %>% filter(Study == "ESS Round 5")
+equ6 <- equ %>% filter(Study == "ESS Round 6")
+equ7 <- equ %>% filter(Study == "ESS Round 7")
+equ9 <- equ %>% filter(Study == "Other")
+
+
+lc1 <- Lc(equ1$n)
+lc2 <- Lc(equ2$n)
+lc3 <- Lc(equ3$n)
+lc4 <- Lc(equ4$n)
+lc5 <- Lc(equ5$n)
+lc6 <- Lc(equ6$n)
+lc7 <- Lc(equ7$n)
+lc9 <- Lc(equ9$n)
+
+dat.lc <- data.frame(p = c(lc1$p, lc2$p, lc3$p, lc4$p, lc5$p, lc6$p, lc7$p, lc9$p),
+                      l = c(lc1$L, lc2$L, lc3$L, lc4$L, lc5$L, lc6$L, lc7$L, lc9$L),
+                      lang = c(rep(times = length(lc1$p), x ="ESS Round 1"),
+                               rep(times = length(lc2$p), x ="ESS Round 2"),
+                               rep(times = length(lc3$p), x ="ESS Round 3"),
+                               rep(times = length(lc4$p), x ="ESS Round 4"),
+                               rep(times = length(lc5$p), x ="ESS Round 5"),
+                               rep(times = length(lc6$p), x ="ESS Round 6"),
+                               rep(times = length(lc7$p), x ="ESS Round 7"),
+                               rep(times = length(lc9$p), x ="Other")))
+
+ggplot(dat.lc, aes(x = p, y = l, color = lang ))+
+  geom_point(color = "black")+
+  geom_line()+
+  xlim(0,1)+
+  ylim(0,1)+
+  geom_abline(color = "red")+
+  labs(title = "Lorenzkurven für Studien mit Ländern", x = "Kummulativer Anteil der\n theoretisch gleichverteilten Werte",
+       y = "Kummulativer Anteil der\n beobachteten Werte", color = "Studie")
+
+```
+
+Wie in der vorherigen Grafik scheinen die *ESS Studien* gleichverteilt zu sein, jedoch sind - im Gegensatz zu den *ESS Studien* - die *Other* Studien ungleich verteilt.
+
+Dies spiegelt sich auch in den einzelnen Gini-Koeffizienten wieder:
+
+```{r}
+kable(data.frame(Gini = c(ineq(equ1$n, type = "Gini"),
+                    ineq(equ2$n, type = "Gini"),
+                    ineq(equ3$n, type = "Gini"),
+                    ineq(equ4$n, type = "Gini"),
+                    ineq(equ5$n, type = "Gini"),
+                    ineq(equ6$n, type = "Gini"),
+                    ineq(equ7$n, type = "Gini"),
+                    ineq(equ9$n, type = "Gini")),
+           Study = c(paste0("ESS Round ", 1:7), "Other"))
+, align = "c", digits = 3, caption = "Gini-Koeffizient bezüglich der Häufigkeit von Ländern berechnet für jede Studie")
+
+```
+
+
+
+
+## Modelle
+
+Nach bisherigem Stand haben wir die Möglichkeit zwei verschiedene Modelle zu berechnen. Beide male sollte ein LMM oder ein GLMM (je nach Verteilung) berechnet werden, wobei Cluster durch die Sprache und / oder durch Sprache mit der jeweiligen Studie entstehen. Jedoch besteht noch immer das Problem, dass Modelle nicht berechnet werden können aufgrund der Filter. Hier zwei Methoden um damit umzugehen:
+
+### Modell 1: Mit Einflussvariablen umkodieren
+
+Eine Möglichkeit zum Umgang mit den Filtern bietet das Paper *Modeling with Structurally Missing Data by OLS and Shapley Value Regressions* von *Stan Lipovetsky* und *Ewa Nowakowska*.
+
+"[...] we suggest splitting each xj with missing values into a system of binary variables, or Gifi system. If xj is measured by a several-point Likert scale, each binary variable of a Gifi system identifies each of the levels of the scale by using the value of 1, and all the other levels including NA equal zero. Only the binary variables of the numerical levels are needed, and the missing values serve as a reference."
+
+Somit könnte man alle Träger der Filter als eine eigene binäre Variable umkodieren.
+
+
+### Model 2: Eigene Strata für die Filter
+
+Die zweite Möglichkeit, die in der Einleitung im Buch *Statistical Analysis with Missing Data (second edition)* von *Roderick Little und Donald Rubin* (S.8) steht:
+
+"We make the following key assumption throughout the book: 
+
+**Assumption 1.1: missingness indicators hide true values that are meaningful for analysis** 
+
+Assumption 1.1 may seem innocuous, but it has important implications for the analysis. When the assumption applies, it makes sense to consider analyses that effectively predict, or ‘‘impute’’ (that is, fill in) the unobserved values. If, on the other hand, Assumption 1.1 does not apply, then imputing the unobserved values makes little sense, and an analysis that creates strata of the population defined by the missingness indicator is more appropriate."
+
+Da die Filter mit den NAs keinen wahren Wert "verstecken", sondern dies so strukturell aufgebaut wurde, sollten somit die Strata betrachtet werden. Hierbei müsste für jede Möglichkeit der Filter ein eigenes Modell berechnet werden. Problematisch wäre die geringe Anzahl an Beobachtungen und noch weiter kann ich nicht sagen, ob überhaupt bei so wenigen Beobachtungen die Unterteilung per LMM / GLMM (aufgrund der hierarchischen Struktur) sinnvoll wäre. Hier fehlen noch Zahlen!
+
+```{r Filtermöglichkeiten, fig.cap = "Alle Modelle, falls für alle Strata / Filter ein Modell berechnet wird"}
+m <- expand.grid(0:1,0:1,0:1,0:1,0:1,0:1,0:1,0:1)
+m <- m[which(!(m[,2] == 0 & m[,3] == 1)),]
+m <- m[which(!(m[,2] == 0 & m[,4] == 1)),]
+m <- m[which(!(m[,7] == 0 & m[,8] == 1)),]
+m <- as.matrix(m)
+
+dat <- expand.grid(y=seq(nrow(m)), x=seq(ncol(m)))
+
+## add in the values from the matrix. 
+dat <- data.frame(dat, value=as.vector(m))
+
+## Create a column with the appropriate colors based on the value.
+dat$color <- ifelse(dat$value == 0, "green", "yellow")
+
+ggplot(data=dat, aes(x=factor(x), y=y, fill = factor(value))) + geom_raster(color = "grey25") + labs(fill = "Filter\nverwendet", x = "Filter", y = "Modellnummer") + scale_x_discrete(breaks = 1:8, labels = c("Filter \n1", "Filter \n2", "Filter \n2.1", "Filter \n2.1.1", "Filter \n3", "Filter \n4", "Filter \n5", "Filter \n5.1")) + ylim(c(0,120))+ scale_fill_manual(labels = c("nein", "ja"), values = c("#7570b3", "#1b9e77"))
+
+```
+
+
+
