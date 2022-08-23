@@ -37,7 +37,7 @@ question <- question[which(!is.na(question$`reliability(r^2)`) & !is.na(question
 #### speichern des neuen Dataframes
 
 write.csv2(question, file = "Gifi-Datensatz.csv")
-
+#question <- read.csv2("Aufbereitung/Gifi-Datensatz2.csv")
 
 ################  Block 1 Concepts    ##############
 

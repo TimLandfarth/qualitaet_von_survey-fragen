@@ -9,7 +9,7 @@ library(readxl)
 
 
 DF <- read.csv2("Gifi-Datensatz.csv")
-
+#DF <- read.csv2("Aufbereitung/Gifi-Datensatz2.csv")
 ####### lineares Model
 
 ##### switching numerical to factors
@@ -32,7 +32,40 @@ pred_formula <- paste(predictors, collapse = " + ")
 
 #### first model - linear model - way 1 by the Gifi-System
 
-limo1 <- lm(quality.r.2. ~ Domain + Concept + Concept..other.simple.concepts_TRUE + Concept..complex.concept_importOfAJudgement + Concept..complex.concept_CertaintyOfAJudgement + Concept..complex.concept_Other + Social.Desirability + Centrality + Reference.period + Formulation.of.the.request.for.an.answer..basic.choice + WH.word.used.in.the.request_used + WH.word.used.in.the.request_notused + X.WH..word_who + X.WH..word_which + X.WH..word_what + X.WH..word_whentime + X.WH..word_whereplace + X.WH..word_howProcedure + X.WH..word_howRelationship + X.WH..word_howOpinion + X.WH..word_howQuantity + X.WH..word_howExtremity + X.WH..word_how_Intensity + X.WH..word_why + Request.for.an.answer.type_interrogative + Request.for.an.answer.type_imperative + Request.for.an.answer.type_declarative + Request.for.an.answer.type_NoneOfThese + Use.of.gradation_nogradation + Use.of.gradation_gradation + Balance.of.the.request_balanced + Balance.of.the.request_unbalanced + Presence.of.encouragement.to.answer_noEncour + Presence.of.encouragement.to.answer_Encour + Emphasis.on.subjective.opinion.in.request_noEmphasis + Emphasis.on.subjective.opinion.in.request_emphasis + Information.about.the.opinion.of.other.people_noInfo + Information.about.the.opinion.of.other.people_info + Use.of.stimulus.or.statement.in.the.request_notUsed + Use.of.stimulus.or.statement.in.the.request_used + Absolute.or.comparative.judgment + Response.scale..basic.choice_morethan2cat + Response.scale..basic.choice_twoCatScale + Response.scale..basic.choice_openEnded + Response.scale..basic.choice_notAvailableMagnEst + Response.scale..basic.choice_NotavailableLineProd + Response.scale..basic.choice_MoreStepsProcedure + Number.of.categories_number + Labels.of.categories_noLabels + Labels.of.categories_partiallyLabeled + Labels.of.categories_fully_Labeled + Labels.with.short.text.or.complete.sentences_shortText + Labels.with.short.text.or.complete.sentences_completeSentences + Order.of.the.labels_firstNegativeOrNonApplicable + Order.of.the.labels_firstPositive + Correspondence.between.labels.and.numbers.of.the.scale_highCorrespondence + Correspondence.between.labels.and.numbers.of.the.scale_mediumCorrespondence + Correspondence.between.labels.and.numbers.of.the.scale_lowCorrespondence + Correspondence.between.labels.and.numbers.of.the.scale_notApplicable + Theoretical.range.of.the.concept.bipolar.unipolar_unipolar + Theoretical.range.of.the.concept.bipolar.unipolar_bipolar + Range.of.the.used.scale.bipolar.unipolar_unipolar + Range.of.the.used.scale.bipolar.unipolar_bipolar + Symmetry.of.response.scale_asymmetric + Symmetry.of.response.scale_symmetric + Neutral.category_present + Neutral.category_notPresent + Number.of.fixed.reference.points_number + Don.t.know.option_present + Don.t.know.option_onlyRegistered + Don.t.know.option_notPresent + Interviewer.instruction + Respondent.instruction + Extra.information.or.definition + Knowledge.provided_noExtraInfo + Knowledge.provided_definitionsOnly + Knowledge.provided_otherExplanations + Knowledge.provided_bothDefAndExpl + Introduction.available. + Request.present.in.the.introduction_notPresent + Request.present.in.the.introduction_present + Number.of.sentences.in.introduction_number + Number.of.words.in.introduction_number + Number.of.subordinated.clauses.in.introduction_number + Number.of.sentences.in.the.request + Number.of.words.in.request + Total.number.of.nouns.in.request.for.an.answer + Total.number.of.abstract.nouns.in.request.for.an.answer + Total.number.of.syllables.in.request + Number.of.subordinate.clauses.in.request_number + Number.of.syllables.in.answer.scale + Total.number.of.nouns.in.answer.scale + Total.number.of.abstract.nouns.in.answer.scale + Showcard.or.other.visual.aids.used + Horizontal.or.vertical.scale_horizontal + Horizontal.or.vertical.scale_vertical + Overlap.of.scale.labels.and.categories_present + Overlap.of.scale.labels.and.categories_notPresent + Numbers.or.letters.before.the.answer.categories_numbers + Numbers.or.letters.before.the.answer.categories_letters, data = DF
+limo1 <- lm(quality.r.2. ~ Domain + Concept + Concept..other.simple.concepts_TRUE + Concept..complex.concept_importOfAJudgement +
+              Concept..complex.concept_CertaintyOfAJudgement + Concept..complex.concept_Other + Social.Desirability + Centrality +
+              Reference.period + Formulation.of.the.request.for.an.answer..basic.choice + WH.word.used.in.the.request_used +
+              WH.word.used.in.the.request_notused + X.WH..word_who + X.WH..word_which + X.WH..word_what + X.WH..word_whentime +
+              X.WH..word_whereplace + X.WH..word_howProcedure + X.WH..word_howRelationship + X.WH..word_howOpinion + X.WH..word_howQuantity +
+              X.WH..word_howExtremity + X.WH..word_how_Intensity + X.WH..word_why + Request.for.an.answer.type_interrogative +
+              Request.for.an.answer.type_imperative + Request.for.an.answer.type_declarative + Request.for.an.answer.type_NoneOfThese +
+              Use.of.gradation_nogradation + Use.of.gradation_gradation + Balance.of.the.request_balanced + Balance.of.the.request_unbalanced +
+              Presence.of.encouragement.to.answer_noEncour + Presence.of.encouragement.to.answer_Encour + Emphasis.on.subjective.opinion.in.request_noEmphasis +
+              Emphasis.on.subjective.opinion.in.request_emphasis + Information.about.the.opinion.of.other.people_noInfo +
+              Information.about.the.opinion.of.other.people_info + Use.of.stimulus.or.statement.in.the.request_notUsed + 
+              Use.of.stimulus.or.statement.in.the.request_used + Absolute.or.comparative.judgment + Response.scale..basic.choice_morethan2cat + 
+              Response.scale..basic.choice_twoCatScale + Response.scale..basic.choice_openEnded + Response.scale..basic.choice_notAvailableMagnEst +
+              Response.scale..basic.choice_NotavailableLineProd + Response.scale..basic.choice_MoreStepsProcedure + Number.of.categories_number +
+              Labels.of.categories_noLabels + Labels.of.categories_partiallyLabeled + Labels.of.categories_fully_Labeled +
+              Labels.with.short.text.or.complete.sentences_shortText + Labels.with.short.text.or.complete.sentences_completeSentences +
+              Order.of.the.labels_firstNegativeOrNonApplicable + Order.of.the.labels_firstPositive +
+              Correspondence.between.labels.and.numbers.of.the.scale_highCorrespondence + 
+              Correspondence.between.labels.and.numbers.of.the.scale_mediumCorrespondence + Correspondence.between.labels.and.numbers.of.the.scale_lowCorrespondence 
+            + Correspondence.between.labels.and.numbers.of.the.scale_notApplicable + Theoretical.range.of.the.concept.bipolar.unipolar_unipolar +
+              Theoretical.range.of.the.concept.bipolar.unipolar_bipolar + Range.of.the.used.scale.bipolar.unipolar_unipolar +
+              Range.of.the.used.scale.bipolar.unipolar_bipolar + Symmetry.of.response.scale_asymmetric + Symmetry.of.response.scale_symmetric + 
+              Neutral.category_present + Neutral.category_notPresent + Number.of.fixed.reference.points_number + Don.t.know.option_present +
+              Don.t.know.option_onlyRegistered + Don.t.know.option_notPresent + Interviewer.instruction + Respondent.instruction + 
+              Extra.information.or.definition + Knowledge.provided_noExtraInfo + Knowledge.provided_definitionsOnly + Knowledge.provided_otherExplanations +
+              Knowledge.provided_bothDefAndExpl + Introduction.available. + Request.present.in.the.introduction_notPresent + 
+              Request.present.in.the.introduction_present + Number.of.sentences.in.introduction_number + Number.of.words.in.introduction_number + 
+              Number.of.subordinated.clauses.in.introduction_number + Number.of.sentences.in.the.request + Number.of.words.in.request + 
+              Total.number.of.nouns.in.request.for.an.answer + Total.number.of.abstract.nouns.in.request.for.an.answer + 
+              Total.number.of.syllables.in.request + Number.of.subordinate.clauses.in.request_number + Number.of.syllables.in.answer.scale + 
+              Total.number.of.nouns.in.answer.scale + Total.number.of.abstract.nouns.in.answer.scale + Showcard.or.other.visual.aids.used + 
+              Horizontal.or.vertical.scale_horizontal + Horizontal.or.vertical.scale_vertical + Overlap.of.scale.labels.and.categories_present + 
+              Overlap.of.scale.labels.and.categories_notPresent + Numbers.or.letters.before.the.answer.categories_numbers + 
+              Numbers.or.letters.before.the.answer.categories_letters, data = DF)
             
             
             
@@ -124,4 +157,3 @@ gam_question <- gamm(quality.r.2. ~  Language + Concept + `Social Desirability` 
                        `Showcard or other visual aids used`:`Start of the response sentence on the visual aid` + `Showcard or other visual aids used`:`Request on the visual aid` + `Computer assisted` + 
                        `Showcard or other visual aids used`:`Picture provided?` + `Visual or oral presentation` + Position, 
                         random = ,data = DF_original)
-)
