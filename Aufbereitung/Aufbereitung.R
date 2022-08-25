@@ -1,7 +1,7 @@
 # 0. Einlesen der Daten und Verwendete Librarys----
 ## 0.1 Einlesen der Daten----
 #df <- read.csv2("C:/Uni/13. Semester/Praktikum/Github mlcu_gesis/mlcu_gesis-main/mlcu_gesis-main/data/SQP3_dataset_2022 03 10.csv")
-df <- readxl::read_xlsx("C:/Uni/13. Semester/Praktikum/Github mlcu_gesis/mlcu_gesis-main/mlcu_gesis-main/data/SQP3_dataset_100_perc_20220517.xlsx", .name_repair = "universal")
+df <- readxl::read_xlsx("Aufbereitung/SQP3_dataset_100_perc_20220517.xlsx", .name_repair = "universal")
 
 ## 0.2 Librarys----
 library(dplyr)
@@ -42,10 +42,21 @@ head(df$Answer.options.text)
 
 ## 1.9 Domain----
 ##### Was ist der Bereich, in dem die Studie angelegt wurde
+##### Abkürzungen: 
+##### na. pol.                          = national politics
+##### Eur. pol.                         = european politics
+##### living cond. and background var.  = living condition and background variables
+##### other bel.                        = other believes
+##### int. pol.                         = international politics
+##### pers. rel.                        = personal relations
+##### con. beh.                         = consumer behaviour
+##### leis. act.                        = leisure activities
+
 df$Domain <- factor(df$Domain, labels = c("na. pol.", "Eur. pol.", "health", "living cond. and \nbackground var.", "other bel.", "work", "int. pol.",
                              "family", "pers. rel.", "con. beh.", "leis. act."))
 
 ## 1.10 Concept----
+##### Konzept der Frage
 df$Concept<- factor(df$Concept, labels = c("Eval. belief", "Feeling", "Importance of sth", "Exp. of future", "Complex con.", "All other con."))
 
 ## 1.11 Social desirability----
@@ -191,12 +202,63 @@ df$Order.of.the.labels <- factor(df$Order.of.the.labels)
 ## 1.53 Correspondence between labels and numbers of the scale----
 df$Correspondence.between.labels.and.numbers.of.the.scale <- factor(df$Correspondence.between.labels.and.numbers.of.the.scale)
 
+# 2. Entfernen von unnoetigen Beobachtungen (Qualitaet = NA)----
+df <- df %>% filter(!is.na(quality))
 
-## 2. Speichern----
+# 3. Gifi-System----
+## 3.1 Funktion zur Implementierung von GIFI----
+GIFIrisieren <- function(df, column){
+  namen <- levels(as.factor(df[[column]]))
+  if(!is.factor(df[[column]])){
+    warning(paste0(column, " ist kein Faktor!"))
+  }
+  namen <- gsub(" ",".", namen)
+  neue_kat_namen <- paste0(column, "_", namen)
+  for( i in 1:length(namen)){
+    df[,neue_kat_namen[i]] <- ifelse(!is.na(df[,column]) & df[,column] == namen[i], paste0(namen[i], "_j"), paste0(namen[i], "_n"))
+  }
+  return(df)
+}
+
+## 3.2 Sammeln der Namen----
+n <- c("WH.word.used.in.the.request", "Request.for.an.answer.type", "Use.of.gradation", "Balance.of.the.request", "Presence.of.encouragement.to.answer",
+  "Emphasis.on.subjective.opinion.in.request", "Information.about.the.opinion.of.other.people", # Filter 1
+  "Theoretical.range.of.the.concept.bipolar.unipolar", "Range.of.the.used.scale.bipolar.unipolar", "Symmetry.of.response.scale", 
+  "Neutral.category", # Filter 2
+  "Knowledge.provided", # Filter 3
+  "Request.present.in.the.introduction", # Filter 4
+  "Horizontal.or.vertical.scale", "Overlap.of.scale.labels.and.categories", "Numbers.or.letters.before.the.answer.categories",
+  "Scale.with.only.numbers.or.numbers.in.boxes", "Start.of.the.response.sentence.on.the.visual.aid", "Request.on.the.visual.aid",
+  "Picture.provided."# Filter 5
+  )
+
+## 3.3 Gifirisieren der Spalten----
+for(j in 1:length(n)){
+   df <- GIFIrisieren(df, n[j])
+}
+
+# 4. Hinzufügen von 0ern in numerischen Filterfragenspalten----
+## 4.1 Filter 2: Number of categories----
+df$Number.of.categories[which(is.na(df$Number.of.categories))]  <- 0
+
+## 4.2 Filter 2: Number of fixed reference points----
+df$Number.of.fixed.reference.points[which(is.na(df$Number.of.fixed.reference.points))] <- 0
+
+## 4.3 Filter 4: Number of sentences in introduction----
+df$Number.of.sentences.in.introduction[which(is.na(df$Number.of.sentences.in.introduction))] <- 0
+
+## 4.4 Filter 4: Number of words in introduction----
+df$Number.of.words.in.introduction[which(is.na(df$Number.of.words.in.introduction))] <- 0
+
+## 4.5 Filter 4: Number of subordinate clauses in introduction----
+df$Number.of.subordinated.clauses.in.introduction[which(is.na(df$Number.of.subordinated.clauses.in.introduction))] <- 0
+
+# 5. Speichern----
 save(df, file = "C:/Uni/13. Semester/Praktikum/R/Aufbereitung/data.RData")
 
 
-
+# 6. Alle Variablen, welche im Modell verwendet werden sollten (-> von Schweisstal kopiert, Namen sind anders!)----
+## 6.1 Von Schweisstal (d.h. Original)----
 length(c("lang", "domain", "concept", "socdesir" ,"centrality" ,"ref_period", "form_basic", "used_WH_word",
   "questiontype", "gradation","balance","encourage","subjectiveop","opinionother",
   "stimulus","absolute","scale_basic","labels","fixrefpoints",
@@ -208,3 +270,57 @@ length(c("lang", "domain", "concept", "socdesir" ,"centrality" ,"ref_period", "f
   "nwords_intro","numsub_intro","nwords_quest","nnouns_quest","nabst_quest",
   "nsyll_quest","nsub_quest","nsyll_ans","nnouns_ans","nabst_ans",
   "computer_assisted","interviewer","visual", "range_correspondence"))
+
+## 6.2 Mit unseren Namen----
+n1 <- c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
+  "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request" , 
+  "Request.for.an.answer.type" , "Use.of.gradation" , "Balance.of.the.request" , 
+  "Presence.of.encouragement.to.answer" , "Emphasis.on.subjective.opinion.in.request" , "Use.of.stimulus.or.statement.in.the.request",
+  "Absolute.or.comparative.judgment" , "Response.scale..basic.choice" , "Number.of.categories" ,
+  "Theoretical.range.of.the.concept.bipolar.unipolar" , "Range.of.the.used.scale.bipolar.unipolar" ,
+  "Symmetry.of.response.scale" , "Neutral.category" , "Number.of.fixed.reference.points" ,
+  "Don.t.know.option" , "Interviewer.instruction" , "Respondent.instruction" , "Extra.information.or.definition",
+  "Knowledge.provided" , "Introduction.available." , "Request.present.in.the.introduction" ,
+  "Number.of.sentences.in.introduction" , "Number.of.words.in.introduction", "Number.of.sentences.in.introduction" ,
+  "Number.of.sentences.in.the.request" , "Number.of.words.in.request" , "Total.number.of.nouns.in.request.for.an.answer" ,
+  "Total.number.of.abstract.nouns.in.request.for.an.answer" , "Total.number.of.syllables.in.request" ,
+  "Number.of.subordinate.clauses.in.request" , "Number.of.syllables.in.answer.scale" ,
+  "Total.number.of.nouns.in.answer.scale" , "Total.number.of.abstract.nouns.in.answer.scale" ,
+  "Showcard.or.other.visual.aids.used" , "Horizontal.or.vertical.scale" , "Overlap.of.scale.labels.and.categories",
+  "Numbers.or.letters.before.the.answer.categories" , "Scale.with.only.numbers.or.numbers.in.boxes" , 
+  "Start.of.the.response.sentence.on.the.visual.aid" , "Request.on.the.visual.aid" ,
+  "Picture.provided." , "Computer.assisted" , "Interviewer" , "Visual.or.oral.presentation" , "Position")
+
+## 6.3 Mit unseren Namen UND Gifirisierung----
+c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
+  "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request_used", "WH.word.used.in.the.request_without", 
+  "Request.for.an.answer.type_Declar.", "Request.for.an.answer.type_Imper.", "Request.for.an.answer.type_Inter.", "Request.for.an.answer.type_None",
+  "Use.of.gradation_No", "Use.of.gradation_Yes" , "Balance.of.the.request_Balanced","Balance.of.the.request_Unbalanced" , 
+  "Presence.of.encouragement.to.answer_No","Presence.of.encouragement.to.answer_Yes" , "Emphasis.on.subjective.opinion.in.request_No",
+  "Emphasis.on.subjective.opinion.in.request_Yes", "Use.of.stimulus.or.statement.in.the.request",
+  "Absolute.or.comparative.judgment" , "Response.scale..basic.choice" , "Number.of.categories" ,
+  "Theoretical.range.of.the.concept.bipolar.unipolar_bipolar","Theoretical.range.of.the.concept.bipolar.unipolar_unipolar",
+  "Range.of.the.used.scale.bipolar.unipolar_Bipolar", "Range.of.the.used.scale.bipolar.unipolar_Unipolar",
+  "Symmetry.of.response.scale_Asymmetric", "Symmetry.of.response.scale_Symmetric",
+  "Neutral.category_Not.present", "Neutral.category_Present" , "Number.of.fixed.reference.points" ,
+  "Don.t.know.option" , "Interviewer.instruction" , "Respondent.instruction" , "Extra.information.or.definition",
+  "Knowledge.provided_Definitions", "Knowledge.provided_Other", "Knowledge.provided_No","Knowledge.provided_def..and.other" ,
+  "Introduction.available." , "Request.present.in.the.introduction_present","Request.present.in.the.introduction_not.present",
+  "Number.of.sentences.in.introduction" , "Number.of.words.in.introduction", "Number.of.sentences.in.introduction" ,
+  "Number.of.sentences.in.the.request" , "Number.of.words.in.request" , "Total.number.of.nouns.in.request.for.an.answer" ,
+  "Total.number.of.abstract.nouns.in.request.for.an.answer" , "Total.number.of.syllables.in.request" ,
+  "Number.of.subordinate.clauses.in.request" , "Number.of.syllables.in.answer.scale" ,
+  "Total.number.of.nouns.in.answer.scale" , "Total.number.of.abstract.nouns.in.answer.scale" ,
+  "Showcard.or.other.visual.aids.used" , "Horizontal.or.vertical.scale_Horizontal", "Horizontal.or.vertical.scale_Vertical",
+  "Overlap.of.scale.labels.and.categories_clearly.connected", "Overlap.of.scale.labels.and.categories_Overlap.present",
+  "Numbers.or.letters.before.the.answer.categories_Neither", "Numbers.or.letters.before.the.answer.categories_Numbers",
+  "Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes", "Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers",
+  "Start.of.the.response.sentence.on.the.visual.aid_No", "Start.of.the.response.sentence.on.the.visual.aid_Yes" , "Request.on.the.visual.aid_No",
+  "Request.on.the.visual.aid_Yes", "Picture.provided._No", "Picture.provided._Yes",
+  "Computer.assisted" , "Interviewer" , "Visual.or.oral.presentation" , "Position")
+
+
+
+
+
+
