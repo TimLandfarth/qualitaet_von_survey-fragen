@@ -1,2 +1,3 @@
 Number of words in introduction: Es gibt mehrere Spalten, die 0 sind (auch wenn eine "Introduction available" war). Beim Nachsehen ist mir aufgefallen, dass diese echt mehr als 0 Wörter in der Introduction haben. Ausschließlich bei ESS Round 6.
- 
+Number of sentences in introduction: Nicht so ...
+Number of subordinate clauses in introduction: sehr viele 0er (508): Wie soll damit umgegangen werden? Ok, falls wir dennoch NAs als 0er aufnehmen?
