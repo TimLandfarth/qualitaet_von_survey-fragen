@@ -166,5 +166,36 @@ lm_naiv_gifi <- lm(quality ~ Language + Domain + Concept + Social.Desirability +
      Request.on.the.visual.aid_No + Request.on.the.visual.aid_Yes + Picture.provided._No + Picture.provided._Yes + 
      Computer.assisted + Interviewer + Visual.or.oral.presentation + Position, data = df)
 
+##### Es werden viele Kovariablen entfernt, sehr wahrscheinlich dadurch, dass eine hohe Kollinearitaet besteht.
+##### Das Problem hierbei ist, dass X´X singulär wird (nicht invertierbar) und deshalb die entsprechenden Spalten herausgeworfen werden.
+##### Lösung: Verwendung von Ridge-Schätzer, da (X´X)^-1 -> (X´X + lambda I)^-1 und eventuell das Problem der Kollinearitaet umgangen werden kann.
 
+lm_naiv_gifi_ridge <- MASS::lm.ridge(quality ~ Language + Domain + Concept + Social.Desirability + Centrality + Reference.period +
+                     Formulation.of.the.request.for.an.answer..basic.choice + WH.word.used.in.the.request_used + 
+                     WH.word.used.in.the.request_without + Request.for.an.answer.type_Declar. + Request.for.an.answer.type_Imper. + 
+                     Request.for.an.answer.type_Inter. + Request.for.an.answer.type_None + Use.of.gradation_No + 
+                     Use.of.gradation_Yes + Balance.of.the.request_Balanced + Balance.of.the.request_Unbalanced + 
+                     Presence.of.encouragement.to.answer_No + Presence.of.encouragement.to.answer_Yes + 
+                     Emphasis.on.subjective.opinion.in.request_No + Emphasis.on.subjective.opinion.in.request_Yes + 
+                     Use.of.stimulus.or.statement.in.the.request + Absolute.or.comparative.judgment + Response.scale..basic.choice + 
+                     Number.of.categories + Theoretical.range.of.the.concept.bipolar.unipolar_bipolar + 
+                     Theoretical.range.of.the.concept.bipolar.unipolar_unipolar + Range.of.the.used.scale.bipolar.unipolar_Bipolar + 
+                     Range.of.the.used.scale.bipolar.unipolar_Unipolar + Symmetry.of.response.scale_Asymmetric + 
+                     Symmetry.of.response.scale_Symmetric + Neutral.category_Not.present + Neutral.category_Present + 
+                     Number.of.fixed.reference.points + Don.t.know.option + Interviewer.instruction + Respondent.instruction + 
+                     Extra.information.or.definition + Knowledge.provided_Definitions + Knowledge.provided_Other + 
+                     Knowledge.provided_No + Knowledge.provided_def..and.other + Introduction.available. + 
+                     Request.present.in.the.introduction_present + Request.present.in.the.introduction_not.present + 
+                     Number.of.sentences.in.introduction + Number.of.words.in.introduction + Number.of.sentences.in.introduction +
+                     Number.of.sentences.in.the.request + Number.of.words.in.request + Total.number.of.nouns.in.request.for.an.answer + 
+                     Total.number.of.abstract.nouns.in.request.for.an.answer + Total.number.of.syllables.in.request + 
+                     Number.of.subordinate.clauses.in.request + Number.of.syllables.in.answer.scale + Total.number.of.nouns.in.answer.scale + 
+                     Total.number.of.abstract.nouns.in.answer.scale + Showcard.or.other.visual.aids.used +
+                     Horizontal.or.vertical.scale_Horizontal + Horizontal.or.vertical.scale_Vertical + 
+                     Overlap.of.scale.labels.and.categories_clearly.connected + Overlap.of.scale.labels.and.categories_Overlap.present + 
+                     Numbers.or.letters.before.the.answer.categories_Neither + Numbers.or.letters.before.the.answer.categories_Numbers + 
+                     Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes + Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers + 
+                     Start.of.the.response.sentence.on.the.visual.aid_No + Start.of.the.response.sentence.on.the.visual.aid_Yes + 
+                     Request.on.the.visual.aid_No + Request.on.the.visual.aid_Yes + Picture.provided._No + Picture.provided._Yes + 
+                     Computer.assisted + Interviewer + Visual.or.oral.presentation + Position, data = df, lambda = seq(0,0.1,0.001))
 
