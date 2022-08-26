@@ -29,21 +29,6 @@ test$Use.of.gradation <- relevel(test$Use.of.gradation, ref = "No request presen
                     Formulation.of.the.request.for.an.answer..basic.choice + WH.word.used.in.the.request + Request.for.an.answer.type + Use.of.gradation, data = test))
 summary(model_99)
 
-##### Funktioniert nicht: Die Spalten sind abhaengig, sodass einige Kategorien herausgeschmissen werden.
-
-
-
-df$path1 <- ifelse(df$Formulation.of.the.request.for.an.answer..basic.choice != "No request present", 0, 1)
-model_naive <- lm(quality ~ Language + Domain + Concept + Social.Desirability + Centrality + Reference.period +
-                    Formulation.of.the.request.for.an.answer..basic.choice + path1:WH.word.used.in.the.request, data = df)
-
-#Concept, Domain, Social.Desirability, Centrality, Reference.period, Formulation.of.the.request.for.an.answer..basic.choice,
-
-#Wh.word.used.in.the.request, Request.for.an.answer.type, Use.of.gradation, Balance.of.the.request, Presence.of.encouragement,
-#Emphasis.on.subjective.opinion.in.request, Information.about.the.opinion.of.other.people
-
-#Use.of.stimulus.or.statement.in.the.request
-
 model_naive <- lm(quality ~ Language + Domain + Concept + Social.Desirability + Centrality + Reference.period +
      Formulation.of.the.request.for.an.answer..basic.choice + WH.word.used.in.the.request + 
      Request.for.an.answer.type + Use.of.gradation + Balance.of.the.request + 
@@ -150,64 +135,36 @@ for(i in 2:nrow(m)){
   count <- rbind(count, mod_count(m[i,1], m[i,2], m[i,3], m[i,4], m[i,5], m[i,6], m[i,7], m[i,8]))
 }
 
+# 1.3 Naives Modell mit GIFI----
+
+lm_naiv_gifi <- lm(quality ~ Language + Domain + Concept + Social.Desirability + Centrality + Reference.period +
+     Formulation.of.the.request.for.an.answer..basic.choice + WH.word.used.in.the.request_used + 
+     WH.word.used.in.the.request_without + Request.for.an.answer.type_Declar. + Request.for.an.answer.type_Imper. + 
+     Request.for.an.answer.type_Inter. + Request.for.an.answer.type_None + Use.of.gradation_No + 
+     Use.of.gradation_Yes + Balance.of.the.request_Balanced + Balance.of.the.request_Unbalanced + 
+     Presence.of.encouragement.to.answer_No + Presence.of.encouragement.to.answer_Yes + 
+     Emphasis.on.subjective.opinion.in.request_No + Emphasis.on.subjective.opinion.in.request_Yes + 
+     Use.of.stimulus.or.statement.in.the.request + Absolute.or.comparative.judgment + Response.scale..basic.choice + 
+     Number.of.categories + Theoretical.range.of.the.concept.bipolar.unipolar_bipolar + 
+     Theoretical.range.of.the.concept.bipolar.unipolar_unipolar + Range.of.the.used.scale.bipolar.unipolar_Bipolar + 
+     Range.of.the.used.scale.bipolar.unipolar_Unipolar + Symmetry.of.response.scale_Asymmetric + 
+     Symmetry.of.response.scale_Symmetric + Neutral.category_Not.present + Neutral.category_Present + 
+     Number.of.fixed.reference.points + Don.t.know.option + Interviewer.instruction + Respondent.instruction + 
+     Extra.information.or.definition + Knowledge.provided_Definitions + Knowledge.provided_Other + 
+     Knowledge.provided_No + Knowledge.provided_def..and.other + Introduction.available. + 
+     Request.present.in.the.introduction_present + Request.present.in.the.introduction_not.present + 
+     Number.of.sentences.in.introduction + Number.of.words.in.introduction + Number.of.sentences.in.introduction +
+     Number.of.sentences.in.the.request + Number.of.words.in.request + Total.number.of.nouns.in.request.for.an.answer + 
+     Total.number.of.abstract.nouns.in.request.for.an.answer + Total.number.of.syllables.in.request + 
+     Number.of.subordinate.clauses.in.request + Number.of.syllables.in.answer.scale + Total.number.of.nouns.in.answer.scale + 
+     Total.number.of.abstract.nouns.in.answer.scale + Showcard.or.other.visual.aids.used +
+     Horizontal.or.vertical.scale_Horizontal + Horizontal.or.vertical.scale_Vertical + 
+     Overlap.of.scale.labels.and.categories_clearly.connected + Overlap.of.scale.labels.and.categories_Overlap.present + 
+     Numbers.or.letters.before.the.answer.categories_Neither + Numbers.or.letters.before.the.answer.categories_Numbers + 
+     Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes + Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers + 
+     Start.of.the.response.sentence.on.the.visual.aid_No + Start.of.the.response.sentence.on.the.visual.aid_Yes + 
+     Request.on.the.visual.aid_No + Request.on.the.visual.aid_Yes + Picture.provided._No + Picture.provided._Yes + 
+     Computer.assisted + Interviewer + Visual.or.oral.presentation + Position, data = df)
 
 
 
-
-
-
-nrow(df %>% filter(
-  Formulation.of.the.request.for.an.answer..basic.choice == "No request present" &
-    Response.scale..basic.choice == "numerical open-ended answers" &
-    Extra.information.or.definition == "Absent"
-))
-
-nrow(df[which(df$Formulation.of.the.request.for.an.answer..basic.choice == "No request present" &
-           df$Response.scale..basic.choice == "numerical open-ended answers"&
-           df$Extra.information.or.definition == "Absent"&
-             df$Introduction.available. == "Not available"
-           ),]
-       
-       )
-
-
-nrow(
-  df %>% filter(
-    Formulation.of.the.request.for.an.answer..basic.choice %in% f1c &
-      Response.scale..basic.choice %in% f2c &
-      Extra.information.or.definition %in% f3c &
-      Introduction.available. %in% f4c &
-      Showcard.or.other.visual.aids.used %in% f5c
-  ))
-
-
-data.frame(
-            df %>% filter(
-              Formulation.of.the.request.for.an.answer..basic.choice == "No request present" &
-                Theoretical.range.of.the.concept.bipolar.unipolar == "Theoretically unipolar" &
-                Introduction.available. == "Not available" &
-                Showcard.or.other.visual.aids.used == "Not used"
-            ) %>% summarise(n = n()) %>% select(n)
-          )
-
-c("lang", "domain", "concept", "socdesir" ,"centrality" ,"ref_period", "form_basic", "used_WH_word",
-  "questiontype", "gradation","balance","encourage","subjectiveop","opinionother",
-  "stimulus","absolute","scale_basic","labels","fixrefpoints",
-  "labels_gramm","labels_order","scale_corres","scale_trange","scale_urange",
-  "symmetry","scale_neutral","Dont_know","instr_interv","instr_respon",
-  "motivation","knowledge","intropresent","intr_request","usedshowcard",
-  "showc_horiz","showc_over","showc_letters","showc_boxes","showc_start",
-  "showc_quest","showc_pict","ncategories","nsents_intro","nsents_quest",
-  "nwords_intro","numsub_intro","nwords_quest","nnouns_quest","nabst_quest",
-  "nsyll_quest","nsub_quest","nsyll_ans","nnouns_ans","nabst_ans",
-  "computer_assisted","interviewer","visual", "range_correspondence")
-
-
-
-maxi <- data.frame(F1 = sample(1:5,5, replace = T),
-                   F2 = sample(1:5, 5, replace = T),
-                   F3 = sample(1:5, 5, replace = T))
-
-for(i in 1 : 40){
-  maxi[,i] <- sample(1:5, 5, replace = T)
-}
