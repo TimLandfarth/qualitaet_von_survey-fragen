@@ -212,10 +212,10 @@ GIFIrisieren <- function(df, column){
   if(!is.factor(df[[column]])){
     warning(paste0(column, " ist kein Faktor!"))
   }
-  namen <- gsub(" ",".", namen)
-  neue_kat_namen <- paste0(column, "_", namen)
+  namen_neu <- gsub(" ",".", namen)
+  neue_kat_namen <- paste0(column, "_", namen_neu)
   for( i in 1:length(namen)){
-    df[,neue_kat_namen[i]] <- ifelse(!is.na(df[,column]) & df[,column] == namen[i], paste0(namen[i], "_j"), paste0(namen[i], "_n"))
+    df[,neue_kat_namen[i]] <- ifelse(!is.na(df[,column]) & df[,column] == namen[i], paste0(namen_neu[i], "_j"), paste0(namen_neu[i], "_n"))
   }
   return(df)
 }
