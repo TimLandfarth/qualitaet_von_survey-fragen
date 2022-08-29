@@ -254,7 +254,7 @@ df$Number.of.words.in.introduction[which(is.na(df$Number.of.words.in.introductio
 df$Number.of.subordinated.clauses.in.introduction[which(is.na(df$Number.of.subordinated.clauses.in.introduction))] <- 0
 
 # 5. Speichern----
-save(df, file = "C:/Uni/13. Semester/Praktikum/R/Aufbereitung/data.RData")
+save(df, file = "C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/data.RData")
 
 
 # 6. Alle Variablen, welche im Modell verwendet werden sollten (-> von Schweisstal kopiert, Namen sind anders!)----
