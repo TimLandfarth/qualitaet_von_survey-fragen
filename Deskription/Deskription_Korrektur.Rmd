@@ -316,7 +316,7 @@ Die hierarchische Struktur der Daten sollte für die Einflüsse **Studien**, **E
 df_sub <- df_sub %>% filter(!is.na(quality)) 
 ggplot(df_sub, aes(x = Study, fill = Study))+
   geom_histogram(stat = "count", color = "grey25")+
-  #scale_x_discrete(labels = c(unique(df_sub$Study)[1:7], rep("",79)))+
+  scale_x_discrete(labels = c(unique(df_sub$Study)[1:7], rep("",79)))+
   theme(axis.text.x = element_text(angle=90, vjust=0.5, size = 5))+
   theme(legend.position = "none")
 
