@@ -18,7 +18,8 @@ knitr::opts_chunk$set(fig.height=8, fig.width=8,
 ```
 
 ```{r, source_auswertungen, echo=FALSE, warning=FALSE, message=FALSE, include = FALSE}
-load("C:/Users/mvett/Desktop/Studium Statistik/SS22/Consulting-Projekt/R_dateien_und_co/Deskription/Tim_Dateien/data.Rdata")
+#load("C:/Users/mvett/Desktop/Studium Statistik/SS22/Consulting-Projekt/R_dateien_und_co/Deskription/Tim_Dateien/data.Rdata")
+load("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/data.RData")
 library(ggplot2)
 library(dplyr)
 library(grid)
@@ -91,7 +92,7 @@ ggplot(df_sub %>% dplyr::select(Use.of.stimulus.or.statement.in.the.request, Abs
   geom_histogram(stat = "count", show.legend = F, color = "grey25")+
   facet_wrap(~key, scales = "free", nrow=3)+
   ggtitle("Binäre Einflüsse - unabhängig von Filtern")+
-  theme(axis.text.x = element_text(angle=0, hjust=1))
+  theme(axis.text.x = element_text(angle=0, hjust=.5))
 
    
 ```
@@ -113,7 +114,9 @@ ggplot(df_sub %>% dplyr::select(Language, Domain, Concept, Centrality,Reference.
 Im folgenden Abschnitt gehe ich etwas näher auf die Filter ein. Die Grafiken sind aus *Codebook Routing* entstanden, in dem beschrieben wird, in was für einer Reihenfolge einzelne Fragebögen bewertet werden sollten.
 
 ```{r, out.height="1\\linewidth", include=TRUE, fig.align="center", echo=FALSE, out.extra='angle=90', fig.cap="Übersicht über codebook routing mit eingezeichneten Filtern"}
-knitr::include_graphics("C:/Users/mvett/Desktop/Studium Statistik/SS22/Consulting-Projekt/R_dateien_und_co/Deskription/Tim_Dateien/Routing/Zusammenfassung klein.pdf")
+#knitr::include_graphics("C:/Users/mvett/Desktop/Studium Statistik/SS22/Consulting-Projekt/R_dateien_und_co/Deskription/Tim_Dateien/Routing/Zusammenfassung klein.pdf")
+knitr::include_graphics("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Codebook-Rooting/Plots/Zusammenfassung/Zusammenfassung klein.pdf")
+
 ```
 
 \newpage
@@ -126,7 +129,7 @@ ggplot(df_sub %>% dplyr::select(Formulation.of.the.request.for.an.answer..basic.
   geom_histogram(stat = "count", show.legend = F, color = "grey25",na.rm =TRUE)+
   facet_wrap(~key, scales = "free", nrow = 4)+
   ggtitle("Filter 1 mit nachfolgenden Spezifikationen")+
-  theme(axis.text.x = element_text(angle=0, hjust=1))
+  theme(axis.text.x = element_text(angle=0, hjust=.5))
 
 
 
@@ -148,6 +151,8 @@ ggplot(df_sub %>% dplyr::select(Response.scale..basic.choice, Theoretical.range.
   theme(axis.text.x = element_text(angle=45, hjust=1))
 
 ```
+
+
 ```{r histogramm5, fig.cap= "Variablen innerhalb des zweiten Filters: ganzzahlige Variablen"}
 ggplot(df_sub %>% dplyr::select(Number.of.categories, Number.of.fixed.reference.points) %>%  gather(), aes(value, fill = value))+
   geom_histogram(stat = "bin",binwidth = 1, show.legend = F,color = "grey25", fill="blue", color = "grey25", na.rm=TRUE)+
@@ -169,7 +174,7 @@ ggplot(df_sub %>% dplyr::select(Extra.information.or.definition, Knowledge.provi
   geom_histogram(stat = "count", show.legend = F, color = "grey25",na.rm = TRUE)+
   facet_wrap(~key, scales = "free")+
   ggtitle("Filter 3 mit nachfolgenden Spezifikationen")+
-  theme(axis.text.x = element_text(angle=0, hjust=1))
+  theme(axis.text.x = element_text(angle=0, hjust=.5))
 
 
 ```
@@ -183,7 +188,7 @@ ggplot(df_sub %>% dplyr::select(Introduction.available., Request.present.in.the.
   geom_histogram(stat = "count", show.legend = F, color = "grey25",na.rm = TRUE)+
   facet_wrap(~key, scales = "free",nrow=1)+
   ggtitle("Filter 4: binäre Variablen")+
-  theme(axis.text.x = element_text(angle=0, hjust=1))
+  theme(axis.text.x = element_text(angle=0, hjust=.5))
 
 ```
 
@@ -192,7 +197,8 @@ ggplot(df_sub %>% dplyr::select(Number.of.sentences.in.introduction,Number.of.su
   geom_histogram(stat= "bin", show.legend = FALSE,color="grey25",fill ="blue",na.rm=TRUE,binwidth=1)+
   facet_wrap(~key, scales = "free",nrow = 2)+
   ggtitle("Filter 4: ganzzahlige Variablen")+
-  theme(axis.text.x = element_text(angle=0, hjust=1))
+  theme(axis.text.x = element_text(angle=0, hjust=.5))+
+  xlim(.5, NA)
 
 
 ```
@@ -254,15 +260,18 @@ rv <- ggplot(df, aes(x = reliability.r.2., y = validity.v.2., color = quality))+
         plot.subtitle = element_text(hjust = 0.5))+
   guides(color=guide_legend(title="Qualität"))
 
-q <- ggplot(df,aes(x= Study, y = quality, fill = Study))+
-      geom_boxplot(show.legend = FALSE)+
-      stat_summary(fun.data = get_box_stats, geom = "text", hjust = 0.6, vjust =0.9)+
-      scale_x_discrete()+
-      ylim(c(0,1))+
-      theme(axis.text.x = element_text(angle=45, hjust=1))+
-      labs(title = "Range der Qualität in den einzelnen Studien")
+#q <- ggplot(df,aes(x= Study, y = quality, fill = Study))+
+#      geom_boxplot(show.legend = FALSE)+
+#      stat_summary(fun.data = get_box_stats, geom = "text", hjust = 0.6, vjust =0.9)+
+#      scale_x_discrete()+
+#      ylim(c(0,1))+
+#      theme(axis.text.x = element_text(angle=45, hjust=1), )+
+#      labs(title = "Range der Qualität in den einzelnen Studien")
      
-  
+q <- ggplot(df, aes(x = quality, fill = quality))+
+  geom_area(color = "black", fill = "lightblue", alpha = .5, size = 1, stat = "bin")+
+  geom_point(aes(y = 0), position = position_jitter(height = 50), shape = 21, alpha = .025)+
+  labs(x = "Qualität", y = "Anzahl", fill = "Qualität")
 
 plot_grid(rv,q,nrow = 2, rel_heights = c(2/3, 1/3), align = "v")
 ```
@@ -307,8 +316,8 @@ Die hierarchische Struktur der Daten sollte für die Einflüsse **Studien**, **E
 df_sub <- df_sub %>% filter(!is.na(quality)) 
 ggplot(df_sub, aes(x = Study, fill = Study))+
   geom_histogram(stat = "count", color = "grey25")+
-  scale_x_discrete(labels = c(unique(df_sub$Study)[1:7], rep("",79)))+
-  theme(axis.text.x = element_text(angle=90, hjust=1))+
+  #scale_x_discrete(labels = c(unique(df_sub$Study)[1:7], rep("",79)))+
+  theme(axis.text.x = element_text(angle=90, vjust=0.5, size = 5))+
   theme(legend.position = "none")
 
 
