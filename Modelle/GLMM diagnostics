@@ -1,0 +1,52 @@
+Model-Assumptions and general diagnosics of GLMM´s
+
+
+Source:  https://www.theanalysisfactor.com/regression-diagnostics-glmm/
+
+How to check if a GLMM gives a good fit? Unfortunately not a straightforward answer
+
+1.	First Assumption: random effects come from a normal distribution
+ visual methods of checking normality (histograms, Q-Q-Plots of each of the random effects) 
+	Problem: when this assumption is hurt, there are no easy remedies
+	 in linear models the outcome can be transformed, in GLMM´s they cannot
+2.	Second assumption: The chosen link function is appropriate
+Most typical link functions as logit or poisson don´t need to be good representations of the relationship of the predictors with the outcomes.
+Problem: Can become quite complicated the bigger the models become
+First way: compare fitted and actual outcomes. (not perfect)
+Second way: with most GLMM´s its best to compare averages of outcomes to predicted values.  if general form of the model is correct, differences between predicted values and averaged actual values will be small. Important: no patterns should be visible in these differences. This is similar to the idea of Hosmer-Lemeshow for logistic regression models
+Use Pearson (normale) residuals or deviance residuals.
+Link zur Erklärung von allen möglichen Residuen:
+
+https://r-forge.r-project.org/scm/viewvc.php/*checkout*/pkg/BinomTools/inst/ResidualsGLM.pdf?revision=6&root=binomtools&pathrev=6
+
+3.	Third assumption: Appropriate estimation of variance
+Checking the variability of the outcomes. Not as easy as in linear models since the variance is a function of the parameter being estimated.
+This is fortunately implemented in R. with the chi-squared statistic. (Ich glaube das ist der Dispersionsparameter).
+Diagnostics for overdispersed models( bigger then 1) vary across distributions, but generally there are remedies for that which result in more conservative p-values.
+4.	Conditional on the random effects, the response values Y_ij are independent of each other and follow a distribution from the exponential family.
+
+Hier noch ein Paar Infos aus den Folien von Longitudinale Datenanalyse, Kapitel 9 (GLMM´s)
+
+3 components specify GLMM`S:
+  
+1.)	Distibutional assumption: Choice of the responses density 
+2.)	Systematic component: Linear predictor 
+3.)	Link function 
+
+Parameter Interpretation:
+Two models possible. Marginal and conditional model.
+
+Marginal model parameters quantify the expected change in the outcome population wise.
+The conditional model parameters quantify them conditional on the random effects.
+
+Estimation
+	3 ways possible:
+1.)	Approximating the data by penalized quasi-likelihood (PQL)
+2.)	Approximating the Integrand by la place approximation
+3.)	Approximating the integral by Gaussian quadrature
+
+Implementations in R
+
+1.)	Function glmer in lme4 package (does Laplace approximation per default and adaptive Gaussian quadrature (for nAGQ = Q and Q>1)
+2.)	Functions gam and bam in mgcv. (does Laplace approximation to REML criterion for method = “REML” or method = “fREML, also for non exponential family distributions.
+3.)	Funtion glmmPQL in 
