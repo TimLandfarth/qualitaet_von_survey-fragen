@@ -1,0 +1,85 @@
+﻿study_name;Country;year;mode ;design ;questions;sample_size
+IFES 1992: Political parties;Austria;1992;FTF;1x4x3;12;877
+IFES 1992: Economic expectations;Austria;1992;FTF;1x4x3;12;1149
+IFES 1992: Materialism/Postmaterialism;Austria;1992;FTF;1x4x3;12;1404
+IFES 1992: Life management;Austria;1992;FTF;1x4x3;12;956
+IFES 1992: European Community;Austria;1992;FTF;1x4x4;16;1486
+IFES 1992: Subjective life satisfaction 1;Austria;1992;FTF;1x4x3;12;1666
+IFES 1992: Subjective life satisfaction 2;Austria;1992;FTF;1x4x3;12;1627
+IFES 1992: Trust in institutions 1;Austria;1992;FTF;1x3x3;9;1553
+IFES 1992: Trust in institutions 2;Austria;1992;FTF;1x3x3;9;1522
+IFES 1992: Physical well-being;Austria;1992;FTF;1x4x3;12;1601
+KUL 1989: Life satisfaction;Belgium;1989;FTF;1x5x3;15;1605
+KUL 1997: Immigration Threat;Belgium;1997;FTF/Mail;1x3x3;9;542
+KUL 1997: Immigration Outgroup;Belgium;1997;FTF/Mail;1x3x3;9;542
+KUL 1997: Immigration Ingroup;Belgium;1997;FTF/Mail;1x4x3;12;542
+STP 1992: Seriousness of crimes;Netherlands;1992;Mail/telepanel;2x3x2;12;674
+STP 1991: Political efficacy (Europe);Netherlands;1991;Telepanel;2x4x2;16;915
+NIMMO 1992: European politics;Netherlands;1992;Mail/telepanel;2x3x2;12;601
+NIMMO 1992: Life satisfaction 1;Netherlands;1992;Telephone;2x4x2;16;915
+NIMMO 1991: Life satisfaction 2;Netherlands;1991;Mail;2x4x2;16;456
+NIMMO 1992: Life satisfaction 3;Netherlands;1992;Mail;2x4x2;16;456
+NIMMO/STP 1992: Life satisfaction 4;Netherlands;1992;Mail/telepanel;2x4x2;16;363
+NIPO 1989: Life satisfaction 5;Netherlands;1989;Telepanel;1x4x3;12;486
+STP 1991: Life satisfaction 6;Netherlands;1991;Telepanel;2x4x2;16;1143
+STP 1991: Life satisfaction 7;Netherlands;1991;Telepanel;2x3x2;12;1599
+STP 1992: Values in life;Netherlands;1992;Mail/telepanel;2x3x2;12;677
+STP 1991: Values of comfort/self respect/status 1;Netherlands;1991;Telepanel;2x3x2;12;368
+STP 1991: Values of family/ambition/independence 1;Netherlands;1991;Telepanel;2x3x2;12;368
+STP 1991: Values of comfort/self respect/status 2;Netherlands;1991;Telepanel;2x3x2;12;408
+STP 1991: Values of family/ambition/independence 2;Netherlands;1991;Telepanel;2x3x2;12;408
+STP 1991: Values of comfort/self respect/status 3;Netherlands;1991;Telepanel;2x3x2;12;390
+STP 1991: Values of family/ambition/independence 3;Netherlands;1991;Telepanel;2x3x2;12;390
+STP 1991: Values of comfort/self respect/status 4;Netherlands;1991;Telepanel;2x3x2;12;422
+STP 1991: Values of family/ambition/independence 4;Netherlands;1991;Telepanel;2x3x2;12;422
+STP 1991: Seriousness of crimes 1;Netherlands;1991;Telepanel;2x3x2;12;627
+STP 1991: Seriousness of crimes 2;Netherlands;1991;Telepanel;2x3x2;12;627
+STP 1991: Seriousness of crimes 3;Netherlands;1991;Telepanel;2x3x2;12;627
+STP 1991: Seriousness of crimes 4;Netherlands;1991;Telepanel;2x3x2;12;631
+STP 1991: Seriousness of crimes 5;Netherlands;1991;Telepanel;2x3x2;12;631
+STP 1991: Seriousness of crimes 6;Netherlands;1991;Telepanel;2x3x2;12;631
+STP 1991: EU membership;Netherlands;1991;Telepanel;2x4x2;16;927
+STP 1991: Crimes 1;Netherlands;1991;Telepanel;1x3x3;9;344
+STP 1991: Crimes 2;Netherlands;1991;Telepanel;1x3x3;9;344
+STP 1991: Crimes 3;Netherlands;1991;Telepanel;1x3x3;9;344
+NIPO 1988: Trade-unions 1;Netherlands;1988;Telepanel;1x3x3;9;438
+NIPO 1988: Trade-unions 2;Netherlands;1988;Telepanel;1x3x3;9;416
+NIPO 1988: Trade-unions 3;Netherlands;1988;Telepanel;1x3x3;9;403
+NIPO 1988: Trade-unions 4;Netherlands;1988;Telepanel;1x3x3;9;398
+STP 1992: Life satisfaction 1;Netherlands;1992;Telepanel;2x3x2;12;216
+STP 1992: Life satisfaction 2;Netherlands;1992;Telepanel;2x3x2;12;252
+STP 1992: Life satisfaction 3;Netherlands;1992;Telepanel;2x3x2;12;248
+STP 1992: Life satisfaction 4;Netherlands;1992;Telepanel;2x3x2;12;244
+STP 1992: Work conditions 1;Netherlands;1992;Telepanel;2x3x2;12;361
+STP 1992: Work conditions 2;Netherlands;1992;Telepanel;2x3x2;12;420
+STP 1992: Work conditions 3;Netherlands;1992;Telepanel;2x3x2;12;388
+STP 1992: Work conditions 4;Netherlands;1992;Telepanel;2x3x2;12;389
+STP 1992: Living conditions 1;Netherlands;1992;Telepanel;2x3x2;12;219
+STP 1992: Living conditions 2;Netherlands;1992;Telepanel;2x3x2;12;253
+STP 1992: Living conditions 3;Netherlands;1992;Telepanel;2x3x2;12;249
+STP 1992: Living conditions 4;Netherlands;1992;Telepanel;2x3x2;12;245
+STP 1988: Evaluating TV programs;Netherlands;1988;Telepanel;1x3x3;9;575
+STP 1988: Use of the TV;Netherlands;1988;Telepanel;1x3x3;9;578
+STP 1988: Reading newspaper;Netherlands;1988;Telepanel;1x3x3;9;578
+STP 1988: Evaluation of politics;Netherlands;1988;Telepanel;1x3x3;9;544
+STP 1988: Evaluation of politicians;Netherlands;1988;Telepanel;1x3x3;9;544
+STP 1988: Political participation;Netherlands;1988;Telepanel;1x3x3;9;554
+STP 1988: Estimation of income;Netherlands;1988;Telepanel;1x3x3;9;554
+STP 1996: Social trust;Netherlands;1996;Telepanel;2x4x2;16;2444
+STP 1996: Social problems;Netherlands;1996;Telepanel;2x4x2;16;2444
+STP 1996: Ethnic minorities 1;Netherlands;1996;Telepanel;2x3x2;12;2444
+STP 1996: Ethnic minorities 2;Netherlands;1996;Telepanel;2x4x2;16;2444
+STP 1996: Ethnic minorities 3;Netherlands;1996;Telepanel;2x4x2;16;2444
+SRC January 1979: Finances, business, health, news 1;United States;1979;FTF;1x4x3;12;229
+SRC January 1979: Finances, business, health, news 2;United States;1979;FTF;1x4x3;12;229
+SRC January 1979: Finances, business, health, news 3;United States;1979;FTF;1x4x3;12;227
+SRC January 1979: Finances, business, health, news 4;United States;1979;FTF;1x4x3;12;227
+SRC July 1981: Finances, business, health, lastyear;United States;1981;FTF;1x3x3;9;703
+SRC July 1981: Finances, business, health, nextyear;United States;1981;FTF;1x3x3;9;703
+SRC 1981: Satisfaction with life;United States;1981;FTF;1x4x3;12;866
+MGP 1984-1987: health and income 1;United States;1986;FTF;2x2x3;12;901
+MGP 1984-1987: saving/transport/safety;United States;1986;FTF;2x3x2;12;893
+MGP 1984-1987: feelings 1;United States;1986;FTF;2x3x3;18;1197
+MGP 1984-1987: feelings 2;United States;1986;FTF;2x3x3;18;1197
+MGP 1984-1987: health and income 2;United States;1986;FTF;2x4x2;16;1169
+MGP 1984-1987: life in general;United States;1986;FTF;2x5x2;20;867
