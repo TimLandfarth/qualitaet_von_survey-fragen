@@ -1,14 +1,18 @@
-# 0. Einlesen der Daten und Verwendete Librarys----
-## 0.1 Einlesen der Daten----
-#df <- read.csv2("C:/Uni/13. Semester/Praktikum/Github mlcu_gesis/mlcu_gesis-main/mlcu_gesis-main/data/SQP3_dataset_2022 03 10.csv")
-df <- readxl::read_xlsx("Aufbereitung/SQP3_dataset_100_perc_20220517.xlsx", .name_repair = "universal")
+# 0. Einlesen der dfen und Verwendete Librarys----
+## 0.1 Einlesen der daten----
+df <- read.csv2("Aufbereitung/SQP3_dataset_100_perc_20220517.csv")
+#df <- readxl::read_xlsx("Aufbereitung/SQP3_dfaset_100_perc_20220517.xlsx", .name_repair = "universal")
 
 ## 0.2 Librarys----
 library(dplyr)
+library(stringr)
 
 #### 83 Variablen
 
-# 1. Aufbereitung der Daten----
+# 1. Aufbereitung der dfen----
+## 1.0 Study----
+names(df)[names(df) == "ï..Study"] <- "Study"
+
 ## 1.1 Item Admin----
 table(df$ItemAdmin)
 
@@ -78,7 +82,7 @@ df$WH.word.used.in.the.request <- factor(df$WH.word.used.in.the.request, labels 
 ## 1.16 Request for an answer type----
 df$Request.for.an.answer.type <- factor(df$Request.for.an.answer.type, labels = c("None", "Inter.", "Imper.", "Declar."))
 
-## 1.17 Use of gradation----
+## 1.17 Use of gradfion----
 df$Use.of.gradation <- factor(df$Use.of.gradation, labels = c("No", "Yes"))
 
 ## 1.18 Balance of the request----
@@ -253,14 +257,346 @@ df$Number.of.words.in.introduction[which(is.na(df$Number.of.words.in.introductio
 ## 4.5 Filter 4: Number of subordinate clauses in introduction----
 df$Number.of.subordinated.clauses.in.introduction[which(is.na(df$Number.of.subordinated.clauses.in.introduction))] <- 0
 
+# 5. Datenaufbereitung Frau Felderer----
+# codes for the experiments in the ESS according to document "ESS1-7 Rounds experimental items"
+# ESS 1
+df$experiment <- ifelse(df$ItemAdmin %in% c("A1","A2", "A3", "A4", "A5", "H1",
+                                              "H2", 
+                                              "H3",
+                                              "H19",
+                                              "H20",
+                                              "H21") & df$Study == "ESS Round 1", "ESS1 media_use", 0)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("A8", "A9", "A10", "H10",
+                                              "H11",# what about A6
+                                              "H12",
+                                              "H28",
+                                              "H29",
+                                              "H30") & df$Study == "ESS Round 1", "ESS1 social_trust", df$experiment)
+df$experiment <- ifelse((df$ItemAdmin %in% c("B2",  "B3", "B4", "H4",
+                                               "H5",
+                                               "H6",
+                                               "H22",
+                                               "H23",
+                                               "H24") ) & df$Study == "ESS Round 1", "ESS1 political_efficacy", df$experiment)
+# ESS 1
+df$experiment <- ifelse(df$ItemAdmin %in% c("B7", "B8", "B9", 
+                                              "H13",
+                                              "H14",
+                                              "H15",
+                                              "H31",
+                                              "H32",
+                                              "H33") & df$Study == "ESS Round 1", "ESS1 political_trust", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("H7",
+                                              "H8",
+                                              "H9",
+                                              "H25",
+                                              "H26",
+                                              "H27" ,
+                                              "B30" ,
+                                              "B31" ,
+                                              "B32") & df$Study == "ESS Round 1", "ESS1 political_satisfaction", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("B43", "B44", "B45", 
+                                              "H16",
+                                              "H17",
+                                              "H18",
+                                              "H34",
+                                              "H35",
+                                              "H36") & df$Study == "ESS Round 1", "ESS1 left-right_orientation", df$experiment)
+
+# ESS 2 
+
+df$experiment <- ifelse(df$ItemAdmin %in% c( "B4", "B5", "B7", 
+                                               "IS25",
+                                               "IS26", 
+                                               "IS27",
+                                               "IS38",
+                                               "IS39",
+                                               "IS40") & df$Study == "ESS Round 2", "ESS2 political_trust", df$experiment)
+df$experiment <- ifelse(df$ItemAdmin %in% c("B25", "B26", "B27",
+                                              "IS11" ,
+                                              "IS12" ,
+                                              "IS13" ,
+                                              "IS35" ,
+                                              "IS36",
+                                              "IS37" ) & df$Study == "ESS Round 2", "ESS2 political_satisfaction", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("D25", "D26", "D27",
+                                              "IS5" ,
+                                              "IS6" ,
+                                              "IS7" ,
+                                              "IS28" ,
+                                              "IS29",
+                                              "IS30" ) & df$Study == "ESS Round 2", "ESS2 evaluation_of_doctors", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("G6", "G7", "G8",
+                                              "IS8" ,
+                                              "IS9" ,
+                                              "IS10" ,
+                                              "IS22" ,
+                                              "IS23",
+                                              "IS24" ) & df$Study == "ESS Round 2", "ESS2 gender_inequalities", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("G22", "G23", "G24",
+                                              "IS2" ,
+                                              "IS3" ,
+                                              "IS4" ,
+                                              "IS15" ,
+                                              "IS16",
+                                              "IS17" ) & df$Study == "ESS Round 2", "ESS2 housework", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("G64", "G66", "G70",
+                                              "IS19" ,
+                                              "IS20" ,
+                                              "IS21" ,
+                                              "IS32" ,
+                                              "IS33",
+                                              "IS34" ) & df$Study == "ESS Round 2", "ESS2 current_job", df$experiment)
+
+#ESS 3
+df$experiment <- ifelse(df$ItemAdmin %in% c("B35", "B36", "B37",
+                                              "HS1" ,
+                                              "HS2" ,
+                                              "HS3" ,
+                                              "HS13" ,
+                                              "HS14",
+                                              "HS15",
+                                              "HS25",
+                                              "HS26",
+                                              "HS27") & df$Study == "ESS Round 3", "ESS3 immigration_perceptions", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("B38", "B39", "B40",
+                                              "HS4" ,
+                                              "HS5" ,
+                                              "HS6" ,
+                                              "HS16" ,
+                                              "HS17",
+                                              "HS18",
+                                              "HS28",
+                                              "HS29",
+                                              "HS30") & df$Study == "ESS Round 3", "ESS3 evaluation_of_immigration", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("E26", "E27", "E28",
+                                              "HS7" ,
+                                              "HS8" ,
+                                              "HS9" ,
+                                              "HS19" ,
+                                              "HS20",
+                                              "HS21",
+                                              "HS31",
+                                              "HS32",
+                                              "HS33") & df$Study == "ESS Round 3", "ESS3 eudaimonic_well-being", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("E40", "E43", "E45",
+                                              "HS10" ,
+                                              "HS11" ,
+                                              "HS12" ,
+                                              "HS22" ,
+                                              "HS23",
+                                              "HS24",
+                                              "HS34",
+                                              "HS35",
+                                              "HS36") & df$Study == "ESS Round 3", "ESS3 life_satisfaction", df$experiment)
+
+# ESS 4 
+df$experiment <- ifelse(df$ItemAdmin %in% c("A1", "A3", "A5",
+                                              "HS1" ,
+                                              "HS2" ,
+                                              "HS3" ,
+                                              "HS13" ,
+                                              "HS14",
+                                              "HS15") & df$Study == "ESS Round 4", "ESS4 media_use", df$experiment)#
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("A8", "A9",
+                                              "HS4" ,
+                                              "HS5" ,
+                                              "HS6" ,
+                                              "HS25" ,
+                                              "HS26",
+                                              "HS27") & df$Study == "ESS Round 4", "ESS4 social_trust", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("B4", "B5", "B6",
+                                              "HS16" ,
+                                              "HS17" ,
+                                              "HS18" ,
+                                              "HS28" ,
+                                              "HS29",
+                                              "HS30") & df$Study == "ESS Round 4", "ESS4 political_trust", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("B23",
+                                              "HS22" ,
+                                              "HS23" ,
+                                              "HS24" ,
+                                              "HS34" ,
+                                              "HS35",
+                                              "HS36") & df$Study == "ESS Round 4", "ESS4 left-right_placement", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("B25", "B26", "B27",
+                                              "HS7" ,
+                                              "HS8" ,
+                                              "HS9" ,
+                                              "HS19" ,
+                                              "HS20",
+                                              "HS21") & df$Study == "ESS Round 4", "ESS4 political_satisfaction", df$experiment)
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("B30", "B31",
+                                              "HS10" ,
+                                              "HS11" ,
+                                              "HS12" ,
+                                              "HS31" ,
+                                              "HS32",
+                                              "HS33") & df$Study == "ESS Round 4", "ESS4 left-right_orientation", df$experiment)
+
+## ESS 5 
+df$experiment <- ifelse(df$ItemAdmin %in% c("D4", "D5","D6",
+                                              "I10" ,
+                                              "I11" ,
+                                              "I12" ,
+                                              "I19" ,
+                                              "I20",
+                                              "I21") & df$Study == "ESS Round 5", "ESS5 effectiveness_of_the_police", df$experiment)#
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("D12", "D13","D14",
+                                              "I15" ,
+                                              "I13" ,
+                                              "I14" ,
+                                              "I4" ,
+                                              "I5",
+                                              "I6") & df$Study == "ESS Round 5", "ESS5 satisfaction_with_the_police", df$experiment)#
+
+df$experiment <- ifelse(df$ItemAdmin %in% c("D15", "D17","D16",
+                                              "I7" ,
+                                              "I8" ,
+                                              "I9" ,
+                                              "I16" ,
+                                              "I17",
+                                              "I18") & df$Study == "ESS Round 5", "ESS5 evaluation_of_the_police", df$experiment)
+
+## ESS 6  
+df$experiment <- ifelse(df$ItemName %in% c("imbgeco",
+                                             "imueclt",
+                                             "imwbcnt",
+                                             "teste19", 
+                                             "teste20", 
+                                             "teste21", 
+                                             "teste28", 
+                                             "teste29", 
+                                             "teste30" ) & df$Study == "ESS Round 6", "ESS6 evaluation_of_immigration", df$experiment)
+
+
+df$experiment <- ifelse(df$ItemName %in% c("fltdpr",
+                                             "slprl",
+                                             "fltlnl",
+                                             "teste4", 
+                                             "teste5", 
+                                             "teste6", 
+                                             "teste13", 
+                                             "teste14", 
+                                             "teste15",
+                                             "teste25", 
+                                             "teste26", 
+                                             "teste27", 
+                                             "teste34", 
+                                             "teste35", 
+                                             "teste36") & df$Study == "ESS Round 6", "ESS6 feelings_past_week", df$experiment)
+
+
+df$experiment <- ifelse(df$ItemName %in% c( "tmimdng",
+                                              "tmabdng",
+                                              "tmendng",
+                                              "teste1", 
+                                              "teste2", 
+                                              "teste3", 
+                                              "teste10", 
+                                              "teste11", 
+                                              "teste12",
+                                              "teste22", 
+                                              "teste23", 
+                                              "teste24", 
+                                              "teste31", 
+                                              "teste32", 
+                                              "teste33") & df$Study == "ESS Round 6", "ESS6 everyday_life_engagement", df$experiment)
+
+df$experiment <- ifelse(df$ItemName %in% c("oppcrgvc","medcrgvc","meprinfc",
+                                             "teste7", 
+                                             "teste8", 
+                                             "teste9", 
+                                             "teste16", 
+                                             "teste17", 
+                                             "teste18") & df$Study == "ESS Round 6", "ESS6 evaluation_of_democracy", df$experiment)#
+# ESS 7 
+#
+df$experiment <- ifelse(df$ItemName %in% c("psppsgv",
+                                             "psppipl",
+                                             "ptcpplt",
+                                             "testf4",
+                                             "testf5",
+                                             "testf6",
+                                             "testf13",
+                                             "testf14",
+                                             "testf15") & df$Study == "ESS Round 7", "ESS7 system__responsiveness", df$experiment)
+
+df$experiment <- ifelse(df$ItemName %in% c("actrolg",
+                                             "cptppol",
+                                             "etapapl",
+                                             "testf7",
+                                             "testf8",
+                                             "testf9",
+                                             "testf16",
+                                             "testf17",
+                                             "testf18") & df$Study == "ESS Round 7", "ESS7 subjective_competence", df$experiment)#
+
+df$experiment <- ifelse(df$ItemName %in% c("qfimlng",
+                                             "qfimwht",
+                                             "qfimcmt",
+                                             "testf1",
+                                             "testf2",
+                                             "testf3",
+                                             "testf10",
+                                             "testf11",
+                                             "testf12") & df$Study == "ESS Round 7", "ESS7 importance_to_immigration", df$experiment)
+
+##
+
+
+
+# split dat$Study before the : to receive variable with study name for non-ESS studies
+df$study <- str_split_fixed(df$Study, ":", 2)[, 1]
+
+# add experiment names of non-ESS studies to experiment variable
+df$experiment <- ifelse(df$experiment == 0, str_split_fixed(df$Study, ":", 2)[, 2], df$experiment)
+
+
+# 6. Implementieren der "Count" Daten----
+## 6.1 ESS Daten----
+dfESSc <- read.csv("Aufbereitung/sample_size.csv")
+dfESSc$cntry <- as.character(factor(dfESSc$cntry, labels = c("Austria", "Belgium", "Bulgarian", "Switzerland", "Cyprus", "Czech Republic",
+                                                             "Germany", "Denmark", "Estonia", "Spain", "Finland", "France", "United Kingdom",
+                                                             "Greece", "Croatia", "Hungary", "Ireland", "Israel", "Iceland", "Italy",
+                                                             "Lithuania", "Luxembourg", "Latvia", "Netherlands", "Norway", "Poland", "Portugal",
+                                                             "Romania", "Russian Federation", "Sweden", "Slovenia", "Slovakia", "Turkey", "Ukraine")))
+
+
+t1 <- df[which(df$Study == "ESS Round 1" & df$Country == "Austria"),]
+t1$experiment <- str_sub(t1$experiment, start = 6)
+t2 <- dfESSc[which(dfESSc$rounds == 1 & dfESSc$cntry  == "Austria"),]
+
+table(t1$experiment)
+table(t2$exp_name)
+
+
+
+
 # 5. Speichern----
-save(df, file = "C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/data.RData")
+save(df, file = "C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/data.Rdata")
 
 
 # 6. Alle Variablen, welche im Modell verwendet werden sollten (-> von Schweisstal kopiert, Namen sind anders!)----
 ## 6.1 Von Schweisstal (d.h. Original)----
 length(c("lang", "domain", "concept", "socdesir" ,"centrality" ,"ref_period", "form_basic", "used_WH_word",
-  "questiontype", "gradation","balance","encourage","subjectiveop","opinionother",
+  "questiontype", "gradfion","balance","encourage","subjectiveop","opinionother",
   "stimulus","absolute","scale_basic","labels","fixrefpoints",
   "labels_gramm","labels_order","scale_corres","scale_trange","scale_urange",
   "symmetry","scale_neutral","Dont_know","instr_interv","instr_respon",
@@ -274,7 +610,7 @@ length(c("lang", "domain", "concept", "socdesir" ,"centrality" ,"ref_period", "f
 ## 6.2 Mit unseren Namen----
 n1 <- c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
   "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request" , 
-  "Request.for.an.answer.type" , "Use.of.gradation" , "Balance.of.the.request" , 
+  "Request.for.an.answer.type" , "Use.of.gradfion" , "Balance.of.the.request" , 
   "Presence.of.encouragement.to.answer" , "Emphasis.on.subjective.opinion.in.request" , "Use.of.stimulus.or.statement.in.the.request",
   "Absolute.or.comparative.judgment" , "Response.scale..basic.choice" , "Number.of.categories" ,
   "Theoretical.range.of.the.concept.bipolar.unipolar" , "Range.of.the.used.scale.bipolar.unipolar" ,
@@ -295,7 +631,7 @@ n1 <- c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality"
 c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
   "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request_used", "WH.word.used.in.the.request_without", 
   "Request.for.an.answer.type_Declar.", "Request.for.an.answer.type_Imper.", "Request.for.an.answer.type_Inter.", "Request.for.an.answer.type_None",
-  "Use.of.gradation_No", "Use.of.gradation_Yes" , "Balance.of.the.request_Balanced","Balance.of.the.request_Unbalanced" , 
+  "Use.of.gradfion_No", "Use.of.gradfion_Yes" , "Balance.of.the.request_Balanced","Balance.of.the.request_Unbalanced" , 
   "Presence.of.encouragement.to.answer_No","Presence.of.encouragement.to.answer_Yes" , "Emphasis.on.subjective.opinion.in.request_No",
   "Emphasis.on.subjective.opinion.in.request_Yes", "Use.of.stimulus.or.statement.in.the.request",
   "Absolute.or.comparative.judgment" , "Response.scale..basic.choice" , "Number.of.categories" ,
