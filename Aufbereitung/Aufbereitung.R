@@ -1,4 +1,4 @@
-# 0. Einlesen der dfen und Verwendete Librarys----
+# 0. Einlesen der daten und Verwendete Librarys----
 ## 0.1 Einlesen der daten----
 df <- read.csv2("Aufbereitung/SQP3_dataset_100_perc_20220517.csv")
 #df <- readxl::read_xlsx("Aufbereitung/SQP3_dfaset_100_perc_20220517.xlsx", .name_repair = "universal")
@@ -9,7 +9,7 @@ library(stringr)
 
 #### 83 Variablen
 
-# 1. Aufbereitung der dfen----
+# 1. Aufbereitung der daten----
 ## 1.0 Study----
 names(df)[names(df) == "ï..Study"] <- "Study"
 
@@ -82,7 +82,7 @@ df$WH.word.used.in.the.request <- factor(df$WH.word.used.in.the.request, labels 
 ## 1.16 Request for an answer type----
 df$Request.for.an.answer.type <- factor(df$Request.for.an.answer.type, labels = c("None", "Inter.", "Imper.", "Declar."))
 
-## 1.17 Use of gradfion----
+## 1.17 Use of gradation----
 df$Use.of.gradation <- factor(df$Use.of.gradation, labels = c("No", "Yes"))
 
 ## 1.18 Balance of the request----
@@ -596,7 +596,7 @@ save(df, file = "C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-frage
 # 6. Alle Variablen, welche im Modell verwendet werden sollten (-> von Schweisstal kopiert, Namen sind anders!)----
 ## 6.1 Von Schweisstal (d.h. Original)----
 length(c("lang", "domain", "concept", "socdesir" ,"centrality" ,"ref_period", "form_basic", "used_WH_word",
-  "questiontype", "gradfion","balance","encourage","subjectiveop","opinionother",
+  "questiontype", "gradation","balance","encourage","subjectiveop","opinionother",
   "stimulus","absolute","scale_basic","labels","fixrefpoints",
   "labels_gramm","labels_order","scale_corres","scale_trange","scale_urange",
   "symmetry","scale_neutral","Dont_know","instr_interv","instr_respon",
@@ -631,7 +631,7 @@ n1 <- c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality"
 c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
   "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request_used", "WH.word.used.in.the.request_without", 
   "Request.for.an.answer.type_Declar.", "Request.for.an.answer.type_Imper.", "Request.for.an.answer.type_Inter.", "Request.for.an.answer.type_None",
-  "Use.of.gradfion_No", "Use.of.gradfion_Yes" , "Balance.of.the.request_Balanced","Balance.of.the.request_Unbalanced" , 
+  "Use.of.gradation_No", "Use.of.gradation_Yes" , "Balance.of.the.request_Balanced","Balance.of.the.request_Unbalanced" , 
   "Presence.of.encouragement.to.answer_No","Presence.of.encouragement.to.answer_Yes" , "Emphasis.on.subjective.opinion.in.request_No",
   "Emphasis.on.subjective.opinion.in.request_Yes", "Use.of.stimulus.or.statement.in.the.request",
   "Absolute.or.comparative.judgment" , "Response.scale..basic.choice" , "Number.of.categories" ,
