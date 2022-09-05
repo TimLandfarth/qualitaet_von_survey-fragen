@@ -27,10 +27,12 @@ table(df$ItemConcept)
 ## 1.4 Country----
 ##### Land
 table(df$Country)
+df$Country <- relevel(factor(df$Country), ref = "Netherlands")
 
 ## 1.5 Language----
 ##### Sprache
 table(df$Language)
+df$Language <- relevel(factor(df$Language), ref = "Dutch")
 
 ## 1.6 Introduction Text----
 ##### Einleitungstext
@@ -56,25 +58,25 @@ head(df$Answer.options.text)
 ##### con. beh.                         = consumer behaviour
 ##### leis. act.                        = leisure activities
 
-df$Domain <- factor(df$Domain, labels = c("na. pol.", "Eur. pol.", "health", "living cond. and \nbackground var.", "other bel.", "work", "int. pol.",
-                             "family", "pers. rel.", "con. beh.", "leis. act."))
+df$Domain <- relevel(factor(df$Domain, labels = c("na. pol.", "Eur. pol.", "health", "living cond. and \nbackground var.", "other bel.", "work", "int. pol.",
+                             "family", "pers. rel.", "con. beh.", "leis. act.")), ref = "na. pol.")
 
 ## 1.10 Concept----
 ##### Konzept der Frage
-df$Concept<- factor(df$Concept, labels = c("Eval. belief", "Feeling", "Importance of sth", "Exp. of future", "Complex con.", "All other con."))
+df$Concept<- relevel(factor(df$Concept, labels = c("Eval. belief", "Feeling", "Importance of sth", "Exp. of future", "Complex con.", "All other con.")), ref = "Feeling")
 
 ## 1.11 Social desirability----
 names(df)
-df$Social.Desirability <- factor(df$Social.Desirability, labels = c("No", "A bit", "A lot"))
+df$Social.Desirability <- relevel(factor(df$Social.Desirability, labels = c("No", "A bit", "A lot")), ref = "No")
 
 ## 1.12 Centrality----
-df$Centrality <- factor(df$Centrality, labels = c("No", "A bit", "Rather", "Central", "Very"))
+df$Centrality <- relevel(factor(df$Centrality, labels = c("No", "A bit", "Rather", "Central", "Very")), ref = "No")
 
 ## 1.13 Reference period----
-df$Reference.period <- factor(df$Reference.period, labels = c("Future", "Present", "Past"))
+df$Reference.period <- relevel(factor(df$Reference.period, labels = c("Future", "Present", "Past")), ref = "Past")
 
 ## 1.14 Formulation of the request for an answer----
-df$Formulation.of.the.request.for.an.answer..basic.choice <- factor(df$Formulation.of.the.request.for.an.answer..basic.choice, label = c("No", "Indirect", "Direct"))
+df$Formulation.of.the.request.for.an.answer..basic.choice <- relevel(factor(df$Formulation.of.the.request.for.an.answer..basic.choice, label = c("No", "Indirect", "Direct")), ref = "No")
 
 ## 1.15 WH - Word used in the request----
 df$WH.word.used.in.the.request <- factor(df$WH.word.used.in.the.request, labels = c("without", "used"))
@@ -102,13 +104,13 @@ table(factor(df$Information.about.the.opinion.of.other.people, labels = c("No"))
 #### wobei die zweite Kategorie (Information about opinions of other present) kein einziges mal auftaucht! -> Weglassen!!!!
 
 ## 1.22 Use of stimulus or statement in the request----
-df$Use.of.stimulus.or.statement.in.the.request <- factor(df$Use.of.stimulus.or.statement.in.the.request, labels = c("No", "Yes"))
+df$Use.of.stimulus.or.statement.in.the.request <- relevel(factor(df$Use.of.stimulus.or.statement.in.the.request, labels = c("No", "Yes")), ref = "No")
 
 ## 1.23 Absolute or comparative judgment----
-df$Absolute.or.comparative.judgment <- factor(df$Absolute.or.comparative.judgment, labels = c("absolute", "comparative"))
+df$Absolute.or.comparative.judgment <- relevel(factor(df$Absolute.or.comparative.judgment, labels = c("absolute", "comparative")), ref = "absolute")
 
 ## 1.24 Response scale basic choice----
-df$Response.scale..basic.choice <- factor(df$Response.scale..basic.choice, labels = c("More than 2", "2", "open-ended", "Magnitude", "Line prod.", "More steps proc."))
+df$Response.scale..basic.choice <- relevel(factor(df$Response.scale..basic.choice, labels = c("More than 2", "2", "open-ended", "Magnitude", "Line prod.", "More steps proc.")), ref = "More than 2")
 
 ## 1.25 number of categories----
 table(df$Number.of.categories)
@@ -129,28 +131,28 @@ df$Neutral.category <- factor(df$Neutral.category, labels = c("Present", "Not pr
 table(df$Number.of.fixed.reference.points)
 
 ## 1.31 Dont know option----
-df$Don.t.know.option <- factor(df$Don.t.know.option, labels = c("present", "only registered", "not present"))
+df$Don.t.know.option <- relevel(factor(df$Don.t.know.option, labels = c("present", "only registered", "not present")), ref = "not present")
 
 ## 1.32 Interviewer instruction----
-df$Interviewer.instruction <- factor(df$Interviewer.instruction, labels = c("Absent", "Present"))
+df$Interviewer.instruction <- relevel(factor(df$Interviewer.instruction, labels = c("Absent", "Present")), ref = "Absent")
 
 ## 1.33 Respondent instruction----
-df$Respondent.instruction <- factor(df$Respondent.instruction, labels =c("Absent", "Present"))
+df$Respondent.instruction <- relevel(factor(df$Respondent.instruction, labels =c("Absent", "Present")), ref = "Absent")
 
 ## 1.34 Extra information or definition----
-df$Extra.information.or.definition <- factor(df$Extra.information.or.definition, labels = c("Absent", "Present"))
+df$Extra.information.or.definition <- relevel(factor(df$Extra.information.or.definition, labels = c("Absent", "Present")), ref = "Absent")
 
 ## 1.35 Knowledge provided----
 df$Knowledge.provided <- factor(df$Knowledge.provided, labels = c("No", "Definitions", "Other", "def. and other"))
 
 ## 1.36 Introduction available?----
-df$Introduction.available. <- factor(df$Introduction.available., labels = c("No", "Yes"))
+df$Introduction.available. <- relevel(factor(df$Introduction.available., labels = c("No", "Yes")), ref = "No")
 
 ## 1.37 Request present in the introduction----
 df$Request.present.in.the.introduction <- factor(df$Request.present.in.the.introduction, labels = c("not present", "present"))
 
 ## 1.38 Showcard or other visual aids used----
-df$Showcard.or.other.visual.aids.used <-  factor(df$Showcard.or.other.visual.aids.used, labels = c("Not used", "Used"))
+df$Showcard.or.other.visual.aids.used <-  relevel(factor(df$Showcard.or.other.visual.aids.used, labels = c("Not used", "Used")), ref = "Not used")
 
 ## 1.39 Horizontal or vertical scale----
 df$Horizontal.or.vertical.scale <- factor(df$Horizontal.or.vertical.scale, labels = c("Vertical", "Horizontal"))
@@ -179,13 +181,13 @@ df$Request.on.the.visual.aid <- factor(df$Request.on.the.visual.aid, labels = c(
 df$Picture.provided. <- factor(df$Picture.provided., label = c("No", "Yes"))
 
 ## 1.46 Computer assisted----
-df$Computer.assisted <- factor(df$Computer.assisted, label = c("No", "Yes"))
+df$Computer.assisted <- relevel(factor(df$Computer.assisted, label = c("No", "Yes")), ref = "No")
 
 ## 1.47 Interviewer----
-df$Interviewer <- factor(df$Interviewer, label = c("No", "Yes"))
+df$Interviewer <- relevel(factor(df$Interviewer, label = c("No", "Yes")), ref = "No")
 
 ## 1.48 Visual or oral presentation----
-df$Visual.or.oral.presentation <- factor(df$Visual.or.oral.presentation, label = c("Oral", "Visual"))
+df$Visual.or.oral.presentation <- relevel(factor(df$Visual.or.oral.presentation, label = c("Oral", "Visual")), ref = "Oral")
 
 ## 1.11 Qualitaet----
 df$quality <- df$reliability.r.2. * df$validity.v.2.
@@ -572,11 +574,46 @@ df$experiment <- ifelse(df$experiment == 0, str_split_fixed(df$Study, ":", 2)[, 
 # 6. Implementieren der "Count" Daten----
 ## 6.1 ESS Daten----
 dfESSc <- read.csv("Aufbereitung/sample_size.csv")
-dfESSc$cntry <- as.character(factor(dfESSc$cntry, labels = c("Austria", "Belgium", "Bulgarian", "Switzerland", "Cyprus", "Czech Republic",
+dfESSc$cntry <- as.character(factor(dfESSc$cntry, labels = c("Austria", "Belgium", "Bulgaria", "Switzerland", "Cyprus", "Czech Republic",
                                                              "Germany", "Denmark", "Estonia", "Spain", "Finland", "France", "United Kingdom",
                                                              "Greece", "Croatia", "Hungary", "Ireland", "Israel", "Iceland", "Italy",
                                                              "Lithuania", "Luxembourg", "Latvia", "Netherlands", "Norway", "Poland", "Portugal",
                                                              "Romania", "Russian Federation", "Sweden", "Slovenia", "Slovakia", "Turkey", "Ukraine")))
+
+
+
+
+df$ess_study <- ifelse(df$Study %in% c("ESS Round 1", "ESS Round 2", "ESS Round 3", "ESS Round 4", "ESS Round 5", "ESS Round 6", "ESS Round 7"), 1, 0)
+
+# generate unique identifier variable to define country, language, ESS round and experiment to merge ESS sample sizes
+df$merge <- str_c(df$Country, df$experiment, sep=" ")
+
+
+dfESSc$merge <- str_c(dfESSc$cntry, paste("ESS", dfESSc$rounds, sep = "") ,dfESSc$exp_name, sep = " ")
+
+
+# ess sanple sizes
+load(file="//svmafile01.gesis.intra/users/felderba/papers/ESS/data/ess_sample_size.Rdata")
+
+#other experiment's sample sizes
+ss_non_ess <- read.csv2("//svmafile01.gesis.intra/users/felderba/SQP/data/sample_sizes/sample_size_non_ess.csv", sep=";")
+
+dat <- merge(dfESSc[, c(7, 8)], df, by.y="merge", by.x="merge", no.dups = TRUE) 
+dat <- merge(ss_non_ess[, c(1, 7)], dat, by.y="?..Study", by.x="?..study_name", all.y = TRUE) 
+dat$sample_size <- as.numeric(ifelse(dat$ess_study == 0, dat$sample_size.x, dat$sample_size.y))
+
+dat <- dat[, c(5:6, 10:14, 16:98, 100)]
+
+
+
+which((df$merge %in% dfESSc$merge) == FALSE)
+
+df$merge[3384]
+df$merge[3384] ==  dfESSc$merge[dfESSc$cntry == "Switzerland" & dfESSc$rounds == 4][8]
+
+
+unique(dfESSc$cntry[dfESSc$rounds == 1])
+
 
 
 t1 <- df[which(df$Study == "ESS Round 1" & df$Country == "Austria"),]
@@ -587,7 +624,71 @@ table(t1$experiment)
 table(t2$exp_name)
 
 
+# 7. Setzen der Referenzkategorien----
+## 7.1 WH- word -> used ----
+df$WH.word.used.in.the.request_used <- relevel(factor(df$WH.word.used.in.the.request_used), ref = "used_j")
 
+## 7.2 Request for an answer type----
+df$Request.for.an.answer.type_Declar. <- relevel(factor(df$Request.for.an.answer.type_Declar.), ref = "Declar._j")
+df$Request.for.an.answer.type_Imper. <- relevel(factor(df$Request.for.an.answer.type_Imper.), ref = "Imper._j")
+df$Request.for.an.answer.type_Inter. <- relevel(factor(df$Request.for.an.answer.type_Inter.), ref = "Inter._j")
+
+## 7.3 Use of gradation----
+df$Use.of.gradation_Yes <- relevel(factor(df$Use.of.gradation_Yes), ref = "Yes_j")
+df$Use.of.gradation_No <- relevel(factor(df$Use.of.gradation_No), ref = "No_j")
+
+## 7.4 Balance of the request----
+df$Balance.of.the.request_Balanced <- relevel(factor(df$Balance.of.the.request_Balanced), ref = "Balanced_j")
+
+## 7.5 Presence of encouragementto answer----
+df$Presence.of.encouragement.to.answer_Yes <- relevel(factor(df$Presence.of.encouragement.to.answer_Yes), ref = "Yes_j")
+
+## 7.6 Emphasis on subjective opinion----
+df$Emphasis.on.subjective.opinion.in.request_Yes <- relevel(factor(df$Emphasis.on.subjective.opinion.in.request_Yes), "Yes_j")
+
+## 7.7 Theoretical range of the concept----
+df$Theoretical.range.of.the.concept.bipolar.unipolar_unipolar <- relevel(factor(df$Theoretical.range.of.the.concept.bipolar.unipolar_unipolar), "unipolar_j")
+
+## 7.8 Range of the used scale----
+df$Range.of.the.used.scale.bipolar.unipolar_Unipolar <- relevel(factor(df$Range.of.the.used.scale.bipolar.unipolar_Unipolar), "Unipolar_j")
+
+## 7.9 Symmetrie of the response scale----
+df$Symmetry.of.response.scale_Symmetric <- relevel(factor(df$Symmetry.of.response.scale_Symmetric), "Symmetric_j")
+
+## 7.10 Neutral category----
+df$Neutral.category_Present <- relevel(factor(df$Neutral.category_Present), ref = "Present_j")
+
+## 7.11 Knowledge provided----
+df$Knowledge.provided_def..and.other <- relevel(factor(df$Knowledge.provided_def..and.other), ref = "def..and.other_j")
+df$Knowledge.provided_Definitions <- relevel(factor(df$Knowledge.provided_Definitions), ref = "Definitions_j")
+df$Knowledge.provided_No <- relevel(factor(df$Knowledge.provided_No), ref = "No_j")
+df$Knowledge.provided_Other <- relevel(factor(df$Knowledge.provided_Other), ref = "Other_j")
+
+## 7.12 Request present in the introduction----
+df$Request.present.in.the.introduction_present <- relevel(factor(df$Request.present.in.the.introduction_present), ref = "present_j")
+
+## 7.13 horizontal or vertical scale----
+df$Horizontal.or.vertical.scale_Horizontal <- relevel(factor(df$Horizontal.or.vertical.scale_Horizontal), ref = "Horizontal_j")
+df$Horizontal.or.vertical.scale_Vertical <- relevel(factor(df$Horizontal.or.vertical.scale_Vertical), ref = "Vertical_j")
+
+## 7.14 Overlap of scale labels and categories----
+df$Overlap.of.scale.labels.and.categories_clearly.connected <- relevel(factor(df$Overlap.of.scale.labels.and.categories_clearly.connected), ref = "clearly.connected_j")
+
+## 7.15 Number or letters before the answer category----
+df$Numbers.or.letters.before.the.answer.categories_Numbers <- relevel(factor(df$Numbers.or.letters.before.the.answer.categories_Numbers), ref = "Numbers_j")
+
+## 7.16 Scale with only numbers or numbers in boxes----
+df$Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes <- relevel(factor(df$Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes), ref = "Numbers.in.boxes_j")
+df$Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers <- relevel(factor(df$Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers), ref = "Only.numbers_j")
+
+## 7.17 Start of the response sentence on the visual aid----
+df$Start.of.the.response.sentence.on.the.visual.aid_Yes <- relevel(factor(df$Start.of.the.response.sentence.on.the.visual.aid_Yes), "Yes_j")
+
+## 7.18 Request on the visual aid----
+df$Request.on.the.visual.aid_Yes <- relevel(factor(df$Request.on.the.visual.aid_Yes), ref = "Yes_j")
+
+## 7.19 Picture provided----
+df$Picture.provided._Yes <- relevel(factor(df$Picture.provided._Yes), ref = "Yes_j")
 
 # 5. Speichern----
 save(df, file = "C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/data.Rdata")
