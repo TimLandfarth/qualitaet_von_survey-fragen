@@ -1,0 +1,14 @@
+Auswahl der Referenzkategorien für das Modell:
+- bei vielen Beobachtungen: Referenz ist die Kategorie mit den meisten Beobachtungen (bspw. Sprache = "Dutch")
+- bei ordinalen Größen: kleinste Kategorie (bspw. Social desirability = "No")
+- bei dichotomen "ja" | "nein" Kategorien: "Nein"
+- Spezial:
+- Absolute or comparative judgement: "Absolute"
+- Visual or oral presentation: "Oral"
+
+
+
+
+Bei GIFI (Aufbereitung.R: Punkt 7. ab ~ Zeile 625): 
+- positive Auswahl, bspw. "WH word used in the request -- used" -> used | Request for an answer type -- Declarative -> Declarative (und nicht NAs + nicht Declarative)
+- Rausgeschmissene Parameter wurden immer ersetzt durch die "positive Auswahl", d.h. Parameter "neutral category" (wurde Gifirisiert in "present" und "not present") wurde der Parameter "present" verwendet
