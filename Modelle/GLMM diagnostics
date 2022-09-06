@@ -1,10 +1,11 @@
-Model-Assumptions and general diagnosics of GLMM´s
+General diagnosics of GLMM´s
 
+This is a short overview of Model assumptions of GLMM`S and problems of model diagnostics of that model class and how we could tackle that issue with the DHARMa package.
 
 Source:  https://www.theanalysisfactor.com/regression-diagnostics-glmm/
 
 How to check if a GLMM gives a good fit? Unfortunately not a straightforward answer
-
+Model-Assumptions:
 1.	First Assumption: random effects come from a normal distribution
  visual methods of checking normality (histograms, Q-Q-Plots of each of the random effects) 
 	Problem: when this assumption is hurt, there are no easy remedies
@@ -25,28 +26,57 @@ This is fortunately implemented in R. with the chi-squared statistic. (Ich glaub
 Diagnostics for overdispersed models( bigger then 1) vary across distributions, but generally there are remedies for that which result in more conservative p-values.
 4.	Conditional on the random effects, the response values Y_ij are independent of each other and follow a distribution from the exponential family.
 
-Hier noch ein Paar Infos aus den Folien von Longitudinale Datenanalyse, Kapitel 9 (GLMM´s)
 
-3 components specify GLMM`S:
-  
-1.)	Distibutional assumption: Choice of the responses density 
-2.)	Systematic component: Linear predictor 
-3.)	Link function 
+Model-diagnostics with DHARMa (R-Package)
 
-Parameter Interpretation:
-Two models possible. Marginal and conditional model.
+Source: https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html
 
-Marginal model parameters quantify the expected change in the outcome population wise.
-The conditional model parameters quantify them conditional on the random effects.
+1.)	Problems of GL(M)M´s and how DHARMa tries to solve these problems
 
-Estimation
-	3 ways possible:
-1.)	Approximating the data by penalized quasi-likelihood (PQL)
-2.)	Approximating the Integrand by la place approximation
-3.)	Approximating the integral by Gaussian quadrature
+Problem in GL(M)M´s:  Interpretation of conventional residuals (Deviance,Pearson and raw) is problematic. One reason for that is that the expected distribution of the data changes with the fitted values. Reweighing with the expected distribution, as done in Pearson residuals, or using deviance residuals, helps to some extent, but it does not lead to homogenous residuals, even if the model is correctly specified.  unreliable interpretation of residual plots.
 
-Implementations in R
+Current standard practice: eyeball residual plots for major misspecifications, and potentially have a look at the random effect distribution, then make a test for overdispersion.
+ usually positive, so adjust model for overdispersion.
 
-1.)	Function glmer in lme4 package (does Laplace approximation per default and adaptive Gaussian quadrature (for nAGQ = Q and Q>1)
-2.)	Functions gam and bam in mgcv. (does Laplace approximation to REML criterion for method = “REML” or method = “fREML, also for non exponential family distributions.
-3.)	Funtion glmmPQL in 
+Drawbacks: 
+1.) overdispersion is often result of missing predictors and misspecified model  residual plots make it difficult to identify those issues.
+2.) Dispersion varies with predictors  can have significant effect on inference. Heteroscedasticity hardly ever tested in GLMM´s eventhough it is assumed to be as likely and influential as in linear regression.
+3.) Residuals are checked conditional on the random effects  no check on the entire models structure.
+
+How does DHARMa tackle these issues?
+
+DHARMa creates readily interpretable residuals for GLMM`s that are standardized between 0 and 1 that can be interpreted as intuitively as residuals for the linear model. This is done by a simulation-based approach. The steps are:
+1.)	Simulate new response data from the fitted model for each observation
+2.)	For each observation, calculate the empirical cumulative density function for the simulated observations, which describe the possible values at the predictor combination of the observed value, assuming the fitted model is correct.
+3.)	The residual is then defined as the value of the empirical density function at the value of the observed data, so a residual of 0 means that all simulated values ar larger than the observed value, and a residual of 0,5 means half of the simulated values are larger than the observed value.
+
+What is the advantage of this definition of residuals?
+
+The key advantage is that these residuals always have the same, known distribution, independent of the model that is fit, if the model is correctly specified. To see this, note that, if the observed data was created from the same data-generating process that we simulate from, all values of the cumulative distribution should appear with equal probability.  we expect the distribution of the residuals to be flat.
+
+Workflow in DHARMa
+
+1.)	Getting standardized residuals according to the above-mentioned algorithm:
+
+     Stand_resid <- simulateResiduals(fittedModel = fittedModel, plot = F)
+	
+FittedModel needs to be fitted model that is supported by DHARMa (glmer or glmmTMB for example)
+2.)	Testing for Dispersion:
+DHARMa contains three overdispersion tests that compare the dispersion of simulated residuals to the observed residuals
+
+2.1) (Default) Non-parametric: comparison of the variance of simulated and observed residuals
+2.2) Pearson – chi2 test
+2.3) refit: if residuals are done via refit  DHARMa compared refitted and original Pearson residuals
+
+INFO: DHARMa default Option 1 is considered b
+
+3.)	Testing for Zero-Inflation
+
+Funktion: testZeroInflation(Stand_Resi)
+Compares the distribution of expected zeros in the data against observed zeros
+
+4.)	Testing for Heteroscedasticity
+5.)	Residual correlation structure
+
+Functions:	 testTemporalAutocorrelation based on Durbin-Watson test
+		 testSpat
