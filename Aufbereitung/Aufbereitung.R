@@ -626,76 +626,73 @@ table(t2$exp_name)
 
 # 7. Setzen der Referenzkategorien----
 ## 7.1 WH- word -> used ----
-df$WH.word.used.in.the.request_used <- relevel(factor(df$WH.word.used.in.the.request_used), ref = "used_j")
+df$WH.word.used.in.the.request_used <- relevel(factor(df$WH.word.used.in.the.request_used), ref = "used_n")
 
 ## 7.2 Request for an answer type----
-df$Request.for.an.answer.type_Declar. <- relevel(factor(df$Request.for.an.answer.type_Declar.), ref = "Declar._j")
-df$Request.for.an.answer.type_Imper. <- relevel(factor(df$Request.for.an.answer.type_Imper.), ref = "Imper._j")
-df$Request.for.an.answer.type_Inter. <- relevel(factor(df$Request.for.an.answer.type_Inter.), ref = "Inter._j")
+df$Request.for.an.answer.type_Declar. <- relevel(factor(df$Request.for.an.answer.type_Declar.), ref = "Declar._n")
+df$Request.for.an.answer.type_Imper. <- relevel(factor(df$Request.for.an.answer.type_Imper.), ref = "Imper._n")
+df$Request.for.an.answer.type_Inter. <- relevel(factor(df$Request.for.an.answer.type_Inter.), ref = "Inter._n")
 
 ## 7.3 Use of gradation----
-df$Use.of.gradation_Yes <- relevel(factor(df$Use.of.gradation_Yes), ref = "Yes_j")
-df$Use.of.gradation_No <- relevel(factor(df$Use.of.gradation_No), ref = "No_j")
+df$Use.of.gradation_Yes <- relevel(factor(df$Use.of.gradation_Yes), ref = "Yes_n")
+df$Use.of.gradation_No <- relevel(factor(df$Use.of.gradation_No), ref = "No_n")
 
 ## 7.4 Balance of the request----
-df$Balance.of.the.request_Balanced <- relevel(factor(df$Balance.of.the.request_Balanced), ref = "Balanced_j")
+df$Balance.of.the.request_Balanced <- relevel(factor(df$Balance.of.the.request_Balanced), ref = "Balanced_n")
 
 ## 7.5 Presence of encouragementto answer----
-df$Presence.of.encouragement.to.answer_Yes <- relevel(factor(df$Presence.of.encouragement.to.answer_Yes), ref = "Yes_j")
+df$Presence.of.encouragement.to.answer_Yes <- relevel(factor(df$Presence.of.encouragement.to.answer_Yes), ref = "Yes_n")
 
 ## 7.6 Emphasis on subjective opinion----
-df$Emphasis.on.subjective.opinion.in.request_Yes <- relevel(factor(df$Emphasis.on.subjective.opinion.in.request_Yes), "Yes_j")
+df$Emphasis.on.subjective.opinion.in.request_Yes <- relevel(factor(df$Emphasis.on.subjective.opinion.in.request_Yes), "Yes_n")
 
 ## 7.7 Theoretical range of the concept----
-df$Theoretical.range.of.the.concept.bipolar.unipolar_unipolar <- relevel(factor(df$Theoretical.range.of.the.concept.bipolar.unipolar_unipolar), "unipolar_j")
+df$Theoretical.range.of.the.concept.bipolar.unipolar_unipolar <- relevel(factor(df$Theoretical.range.of.the.concept.bipolar.unipolar_unipolar), "unipolar_n")
 
 ## 7.8 Range of the used scale----
-df$Range.of.the.used.scale.bipolar.unipolar_Unipolar <- relevel(factor(df$Range.of.the.used.scale.bipolar.unipolar_Unipolar), "Unipolar_j")
+df$Range.of.the.used.scale.bipolar.unipolar_Unipolar <- relevel(factor(df$Range.of.the.used.scale.bipolar.unipolar_Unipolar), "Unipolar_n")
 
 ## 7.9 Symmetrie of the response scale----
-df$Symmetry.of.response.scale_Symmetric <- relevel(factor(df$Symmetry.of.response.scale_Symmetric), "Symmetric_j")
+df$Symmetry.of.response.scale_Symmetric <- relevel(factor(df$Symmetry.of.response.scale_Symmetric), "Symmetric_n")
 
 ## 7.10 Neutral category----
-df$Neutral.category_Present <- relevel(factor(df$Neutral.category_Present), ref = "Present_j")
+df$Neutral.category_Present <- relevel(factor(df$Neutral.category_Present), ref = "Present_n")
 
 ## 7.11 Knowledge provided----
-df$Knowledge.provided_def..and.other <- relevel(factor(df$Knowledge.provided_def..and.other), ref = "def..and.other_j")
-df$Knowledge.provided_Definitions <- relevel(factor(df$Knowledge.provided_Definitions), ref = "Definitions_j")
-df$Knowledge.provided_No <- relevel(factor(df$Knowledge.provided_No), ref = "No_j")
-df$Knowledge.provided_Other <- relevel(factor(df$Knowledge.provided_Other), ref = "Other_j")
+df$Knowledge.provided_def..and.other <- relevel(factor(df$Knowledge.provided_def..and.other), ref = "def..and.other_n")
+df$Knowledge.provided_Definitions <- relevel(factor(df$Knowledge.provided_Definitions), ref = "Definitions_n")
+df$Knowledge.provided_No <- relevel(factor(df$Knowledge.provided_No), ref = "No_n")
+df$Knowledge.provided_Other <- relevel(factor(df$Knowledge.provided_Other), ref = "Other_n")
 
 ## 7.12 Request present in the introduction----
-df$Request.present.in.the.introduction_present <- relevel(factor(df$Request.present.in.the.introduction_present), ref = "present_j")
+df$Request.present.in.the.introduction_present <- relevel(factor(df$Request.present.in.the.introduction_present), ref = "present_n")
 
 ## 7.13 horizontal or vertical scale----
-df$Horizontal.or.vertical.scale_Horizontal <- relevel(factor(df$Horizontal.or.vertical.scale_Horizontal), ref = "Horizontal_j")
-df$Horizontal.or.vertical.scale_Vertical <- relevel(factor(df$Horizontal.or.vertical.scale_Vertical), ref = "Vertical_j")
+df$Horizontal.or.vertical.scale_Horizontal <- relevel(factor(df$Horizontal.or.vertical.scale_Horizontal), ref = "Horizontal_n")
+df$Horizontal.or.vertical.scale_Vertical <- relevel(factor(df$Horizontal.or.vertical.scale_Vertical), ref = "Vertical_n")
 
 ## 7.14 Overlap of scale labels and categories----
-df$Overlap.of.scale.labels.and.categories_clearly.connected <- relevel(factor(df$Overlap.of.scale.labels.and.categories_clearly.connected), ref = "clearly.connected_j")
+df$Overlap.of.scale.labels.and.categories_clearly.connected <- relevel(factor(df$Overlap.of.scale.labels.and.categories_clearly.connected), ref = "clearly.connected_n")
 
 ## 7.15 Number or letters before the answer category----
-df$Numbers.or.letters.before.the.answer.categories_Numbers <- relevel(factor(df$Numbers.or.letters.before.the.answer.categories_Numbers), ref = "Numbers_j")
+df$Numbers.or.letters.before.the.answer.categories_Numbers <- relevel(factor(df$Numbers.or.letters.before.the.answer.categories_Numbers), ref = "Numbers_n")
 
 ## 7.16 Scale with only numbers or numbers in boxes----
-df$Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes <- relevel(factor(df$Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes), ref = "Numbers.in.boxes_j")
-df$Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers <- relevel(factor(df$Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers), ref = "Only.numbers_j")
+df$Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes <- relevel(factor(df$Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes), ref = "Numbers.in.boxes_n")
+df$Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers <- relevel(factor(df$Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers), ref = "Only.numbers_n")
 
 ## 7.17 Start of the response sentence on the visual aid----
-df$Start.of.the.response.sentence.on.the.visual.aid_Yes <- relevel(factor(df$Start.of.the.response.sentence.on.the.visual.aid_Yes), "Yes_j")
+df$Start.of.the.response.sentence.on.the.visual.aid_Yes <- relevel(factor(df$Start.of.the.response.sentence.on.the.visual.aid_Yes), "Yes_n")
 
 ## 7.18 Request on the visual aid----
-df$Request.on.the.visual.aid_Yes <- relevel(factor(df$Request.on.the.visual.aid_Yes), ref = "Yes_j")
+df$Request.on.the.visual.aid_Yes <- relevel(factor(df$Request.on.the.visual.aid_Yes), ref = "Yes_n")
 
 ## 7.19 Picture provided----
-df$Picture.provided._Yes <- relevel(factor(df$Picture.provided._Yes), ref = "Yes_j")
-
-# 5. Speichern----
-save(df, file = "C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/data.Rdata")
+df$Picture.provided._Yes <- relevel(factor(df$Picture.provided._Yes), ref = "Yes_n")
 
 
-# 6. Alle Variablen, welche im Modell verwendet werden sollten (-> von Schweisstal kopiert, Namen sind anders!)----
-## 6.1 Von Schweisstal (d.h. Original)----
+# 8. Alle Variablen, welche im Modell verwendet werden sollten (-> von Schweisstal kopiert, Namen sind anders!)----
+## 8.1 Von Schweisstal (d.h. Original)----
 length(c("lang", "domain", "concept", "socdesir" ,"centrality" ,"ref_period", "form_basic", "used_WH_word",
   "questiontype", "gradation","balance","encourage","subjectiveop","opinionother",
   "stimulus","absolute","scale_basic","labels","fixrefpoints",
@@ -708,7 +705,7 @@ length(c("lang", "domain", "concept", "socdesir" ,"centrality" ,"ref_period", "f
   "nsyll_quest","nsub_quest","nsyll_ans","nnouns_ans","nabst_ans",
   "computer_assisted","interviewer","visual", "range_correspondence"))
 
-## 6.2 Mit unseren Namen----
+## 8.2 Mit unseren Namen----
 n1 <- c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
   "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request" , 
   "Request.for.an.answer.type" , "Use.of.gradfion" , "Balance.of.the.request" , 
@@ -728,7 +725,7 @@ n1 <- c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality"
   "Start.of.the.response.sentence.on.the.visual.aid" , "Request.on.the.visual.aid" ,
   "Picture.provided." , "Computer.assisted" , "Interviewer" , "Visual.or.oral.presentation" , "Position")
 
-## 6.3 Mit unseren Namen UND Gifirisierung----
+## 8.3 Mit unseren Namen UND Gifirisierung----
 c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
   "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request_used", "WH.word.used.in.the.request_without", 
   "Request.for.an.answer.type_Declar.", "Request.for.an.answer.type_Imper.", "Request.for.an.answer.type_Inter.", "Request.for.an.answer.type_None",
@@ -756,8 +753,32 @@ c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Re
   "Request.on.the.visual.aid_Yes", "Picture.provided._No", "Picture.provided._Yes",
   "Computer.assisted" , "Interviewer" , "Visual.or.oral.presentation" , "Position")
 
+## 8.3 Mit unseren Namen, Gifirisierung und ohne "Singularitaets" Variablen----
+model_names <- c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
+  "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request_used",  
+  "Request.for.an.answer.type_Declar.", "Request.for.an.answer.type_Imper.", "Request.for.an.answer.type_Inter.",
+  "Use.of.gradation_No", "Use.of.gradation_Yes" , "Balance.of.the.request_Balanced", 
+  "Presence.of.encouragement.to.answer_Yes" , 
+  "Emphasis.on.subjective.opinion.in.request_Yes", "Use.of.stimulus.or.statement.in.the.request",
+  "Absolute.or.comparative.judgment" , "Response.scale..basic.choice" , "Number.of.categories" ,
+  "Theoretical.range.of.the.concept.bipolar.unipolar_unipolar", "Range.of.the.used.scale.bipolar.unipolar_Unipolar", "Symmetry.of.response.scale_Symmetric",
+  "Neutral.category_Present" , "Number.of.fixed.reference.points" ,
+  "Don.t.know.option" , "Interviewer.instruction" , "Respondent.instruction" , "Extra.information.or.definition",
+  "Knowledge.provided_Definitions", "Knowledge.provided_Other", "Knowledge.provided_No","Knowledge.provided_def..and.other" ,
+  "Introduction.available." , "Request.present.in.the.introduction_present",
+  "Number.of.sentences.in.introduction" , "Number.of.words.in.introduction",
+  "Number.of.sentences.in.the.request" , "Number.of.words.in.request" , "Total.number.of.nouns.in.request.for.an.answer" ,
+  "Total.number.of.abstract.nouns.in.request.for.an.answer" , "Total.number.of.syllables.in.request" ,
+  "Number.of.subordinate.clauses.in.request" , "Number.of.syllables.in.answer.scale" ,
+  "Total.number.of.nouns.in.answer.scale" , "Total.number.of.abstract.nouns.in.answer.scale" ,
+  "Showcard.or.other.visual.aids.used" , "Horizontal.or.vertical.scale_Horizontal", "Horizontal.or.vertical.scale_Vertical",
+  "Overlap.of.scale.labels.and.categories_clearly.connected", "Numbers.or.letters.before.the.answer.categories_Numbers",
+  "Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes", "Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers",
+  "Start.of.the.response.sentence.on.the.visual.aid_Yes" , "Request.on.the.visual.aid_Yes", "Picture.provided._Yes",
+  "Computer.assisted" , "Interviewer" , "Visual.or.oral.presentation" , "Position")
 
-
+# 9. Speichern----
+save(df, model_names, file = "C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/data.Rdata")
 
 
 
