@@ -245,6 +245,7 @@ m2 <- nlme::lme(as.formula(formel), random = ~1|Study, data = df)
 
 ### 1.4.3 lme4----
 m3 <- lme4::lmer(as.formula(paste(formel, "+ (1|Language/Study)")), data = df, REML = T)
+m4 <- lme4::glmer(as.formula(paste("quality ~ ", paste(model_names, sep = " + "), "+ (1|Language/Study)")), data = df, family = binomial(link = "logit"))
 
 m3_mod <- summary(m3)
 
