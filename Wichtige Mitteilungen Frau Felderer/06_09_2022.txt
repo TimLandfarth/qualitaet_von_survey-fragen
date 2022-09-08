@@ -1,0 +1,124 @@
+Kovariablen:
+
+Stetig / Ganzzahlig:
+
+Number of categories:
+Per Median: 4 verschiedene Anzahlen von Kategorien pro Studie.
+Per Median: 7 verschiedene Anzahlen von Kategorien pro Land (NICHT LANGUAGE!)
+
+Problem: Zu wenig Kategorien um es als stetiges Merkmal aufzunehmen (Pi mal Daumenregel: Ab ca. 5 Kategorien kann man etwas als stetig ansehen).
+Lösung: 
+Dichotomisieren (durch Threshold: per Expertenwissen ODER - sehr ungern - per cut(.) Funktion) oder Aufnahme jeder Kategorie als einzelne Kovariable
+
+
+
+Number of fixed Reference Points:
+Per Median: 4 verschiedene Anzahlen von Referenzpunkten pro Studie.
+Per Median: 4 verschiedene Anzahlen von Referenzpunkten pro Land.
+
+Problem: Selbiges wie bei "number of categories"
+Lösung: Selbiges wie bei "number of categories"
+
+
+
+Number of sentences in introduction:
+Per Median: 3.5 verschiedene Anzahlen von Kategorien pro Studie.
+Per Median: 3 verschiedene Anzahlen von Kategorien pro Land.
+
+Problem: Selbiges wie bei "number of categories"
+Lösung: Selbiges wie bei "number of categories"
+
+
+
+Number of words in introduction:
+Per Median: 17 verschiedene Anzahlen von Kategorien pro Studie.
+Per Median: 8 verschiedene Anzahlen von Kategorien pro Studie.
+
+PASST!
+
+
+
+Number of sentences in the request:
+Per Median pro Studie: 5.5 
+Per Median pro Land: 4
+
+Problem: Selbiges wie bei "number of categories"
+Lösung: Selbiges wie bei "number of categories"
+
+
+
+Number of words in request:
+Per Median pro Studie: 55
+Per Median pro Land: 39
+
+PASST!
+
+
+
+Total number of nouns in request for an answer:
+Per Median pro Studie: 15
+Per Median pro Land: 11
+
+PASST!
+
+
+
+Total number of abstract nouns in request for an aswer:
+Per Median pro Studie: 14
+Per Median pro Land: 10
+
+PASST!
+
+
+
+Total number of syllables in the request:
+Per Median pro Studie: 90.5
+Per Median pro Land: 59.5
+
+PASST!
+
+
+
+Number of subordinate clauses in request:
+Per Median pro Studie: 9
+Per Median pro Land: 7
+
+PASST!
+
+
+
+Number of syllables in answer scale:
+Per Median pro Studie: 46
+Per Median pro Land: 26
+
+PASST!
+
+
+
+Total number of nouns in answer scale:
+Per Median pro Studie: 7.5
+Per Median pro Land: 5
+
+Knapp. 
+
+
+
+Total number of nouns in answer scale:
+Per Median pro Studie: 6.5
+Per Median pro Land: 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
