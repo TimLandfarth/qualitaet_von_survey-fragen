@@ -573,69 +573,56 @@ df$experiment <- ifelse(df$experiment == 0, str_split_fixed(df$Study, ":", 2)[, 
 
 # 6. Implementieren der "Count" Daten----
 ## 6.1 ESS Daten----
-load(file="C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/ess_sample_size.Rdata")
-ss_non_ess <- read.csv2("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/sample_size_non_ess.csv", sep=";")
+dfESSc <- read.csv("Aufbereitung/sample_size.csv")
+dfESSc$cntry <- as.character(factor(dfESSc$cntry, labels = c("Austria", "Belgium", "Bulgaria", "Switzerland", "Cyprus", "Czech Republic",
+                                                             "Germany", "Denmark", "Estonia", "Spain", "Finland", "France", "United Kingdom",
+                                                             "Greece", "Croatia", "Hungary", "Ireland", "Israel", "Iceland", "Italy",
+                                                             "Lithuania", "Luxembourg", "Latvia", "Netherlands", "Norway", "Poland", "Portugal",
+                                                             "Romania", "Russian Federation", "Sweden", "Slovenia", "Slovakia", "Turkey", "Ukraine")))
 
 
-### 6.1.1 Auseinanderziehen der Variable "merge"----
-ss_merge[,8:11] <- str_split_fixed(ss_merge$merge, " ", 4)
 
-### 6.1.2 Aendern der Laendernamen in volle Namen----
-ss_merge$V8 <- as.character(factor(ss_merge$V8, labels = c("Austria", "Belgium", "Bulgaria", "Switzerland", "Cyprus", "Czech Republic",
-                                                           "Germany", "Denmark", "Estonia", "Spain", "Finland", "France", "United Kingdom",
-                                                           "Greece", "Croatia", "Hungary", "Ireland", "Israel", "Iceland", "Italy",
-                                                           "Lithuania", "Luxembourg", "Latvia", "Netherlands", "Norway", "Poland", "Portugal",
-                                                           "Romania", "Russian Federation", "Sweden", "Slovenia", "Slovakia", "Turkey", "Ukraine")))
 
-### 6.1.3 Aendern der Studiennamen in "volle" Namen----
-ss_merge$V10 <- ifelse(ss_merge$V10 == "ESS1","ESS Round 1",
-                       ifelse(ss_merge$V10 == "ESS2","ESS Round 2",
-                              ifelse(ss_merge$V10 == "ESS3","ESS Round 3",
-                                     ifelse(ss_merge$V10 == "ESS4","ESS Round 4",
-                                            ifelse(ss_merge$V10 == "ESS5","ESS Round 5",
-                                                   ifelse(ss_merge$V10 == "ESS6", "ESS Round 6", "ESS Round 7")
-                                            )
-                                     )
-                              )
-                       )
-)
+df$ess_study <- ifelse(df$Study %in% c("ESS Round 1", "ESS Round 2", "ESS Round 3", "ESS Round 4", "ESS Round 5", "ESS Round 6", "ESS Round 7"), 1, 0)
 
-### 6.1.4 Zusammenaddieren gleicher Zeilen----
-ss_merge <- ss_merge %>% group_by(exp_name, V8, V10) %>% summarise(sample_size = sum(sample_size)) %>% as.data.frame()
+# generate unique identifier variable to define country, language, ESS round and experiment to merge ESS sample sizes
+df$merge <- str_c(df$Country, df$experiment, sep=" ")
 
-### 6.1.5 Aendern der Experimentnamen ohne ESS davor----
-df <- cbind(df, experiment_1 = str_split_fixed(df$experiment, " ",2)[,2])
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+dfESSc$merge <- str_c(dfESSc$cntry, paste("ESS", dfESSc$rounds, sep = "") ,dfESSc$exp_name, sep = " ")
 
-### 6.1.6 Zusammenfuegen des df Datesatzes fuer ESS Studien und des sample size datensatzes----
-dat_1 <-  merge(df %>% filter(Study %in% c("ESS Round 1",
-                                            "ESS Round 2",
-                                            "ESS Round 3",
-                                            "ESS Round 4",
-                                            "ESS Round 5",
-                                            "ESS Round 6",
-                                            "ESS Round 7")), ss_merge, by.x = c("Study", "experiment_1", "Country"), by.y = c("V10",  "exp_name", "V8"))
 
-# 6.2 Nicht ESS Daten----
-## 6.2.1 Zusammenfuegen der Nicht ESS Daten----
-dat_2 <- df %>% filter(!(Study %in% c(
-  "ESS Round 1",
-  "ESS Round 2",
-  "ESS Round 3",
-  "ESS Round 4",
-  "ESS Round 5",
-  "ESS Round 6",
-  "ESS Round 7"
-))
-) %>% merge(ss_non_ess, by.x = c("Study"), by.y = "ï..study_name")
+# ess sanple sizes
+load(file="//svmafile01.gesis.intra/users/felderba/papers/ESS/data/ess_sample_size.Rdata")
 
-## 6.3 Zusammenfuehren der ESS Daten und der Nicht ESS Daten----
-df <- bind_rows(dat_1,dat_2)
+#other experiment's sample sizes
+ss_non_ess <- read.csv2("//svmafile01.gesis.intra/users/felderba/SQP/data/sample_sizes/sample_size_non_ess.csv", sep=";")
 
-## 6.4 Entfernen von unnoetigen neuen Spalten----
-df$experiment <- df$experiment_1
-remv <- which(names(df) %in% c("Country.y", "Country.x", "year", "design", "mode", "questions", "experiment_1"))
-df[remv] <- list(NULL)
-rm(ss_merge, ss_non_ess, dat_1, dat_2, j, n, remv)
+dat <- merge(dfESSc[, c(7, 8)], df, by.y="merge", by.x="merge", no.dups = TRUE) 
+dat <- merge(ss_non_ess[, c(1, 7)], dat, by.y="?..Study", by.x="?..study_name", all.y = TRUE) 
+dat$sample_size <- as.numeric(ifelse(dat$ess_study == 0, dat$sample_size.x, dat$sample_size.y))
+
+dat <- dat[, c(5:6, 10:14, 16:98, 100)]
+
+
+
+which((df$merge %in% dfESSc$merge) == FALSE)
+
+df$merge[3384]
+df$merge[3384] ==  dfESSc$merge[dfESSc$cntry == "Switzerland" & dfESSc$rounds == 4][8]
+
+
+unique(dfESSc$cntry[dfESSc$rounds == 1])
+
+
+
+t1 <- df[which(df$Study == "ESS Round 1" & df$Country == "Austria"),]
+t1$experiment <- str_sub(t1$experiment, start = 6)
+t2 <- dfESSc[which(dfESSc$rounds == 1 & dfESSc$cntry  == "Austria"),]
+
+table(t1$experiment)
+table(t2$exp_name)
+
 
 # 7. Setzen der Referenzkategorien----
 ## 7.1 WH- word -> used ----
@@ -767,7 +754,7 @@ c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Re
   "Computer.assisted" , "Interviewer" , "Visual.or.oral.presentation" , "Position")
 
 ## 8.3 Mit unseren Namen, Gifirisierung und ohne "Singularitaets" Variablen----
-model_names <- c("Language" , "Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
+model_names <- c("Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
   "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request_used",  
   "Request.for.an.answer.type_Declar.", "Request.for.an.answer.type_Imper.", "Request.for.an.answer.type_Inter.",
   "Use.of.gradation_No", "Use.of.gradation_Yes" , "Balance.of.the.request_Balanced", 
