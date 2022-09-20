@@ -1,17 +1,19 @@
 # 0. 
 ## 0.1 Einlesen der Daten----
 load("Aufbereitung/data.RData")
+load("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Modelle/modelle.RData")
 
 ## 0.2 Librarys ----
 library(ggplot2)
 library(dplyr)
 library(glmmTMB)
+library(forcats)
 
 ## 0.3 zusammenfassen aller nicht ESS studien zu einer Studie----
 df$Study[which( !(df$Study %in% c(paste("ESS Round", 1:7))))] <- "Other"
 
 ## 0.4 Funktionen ----
-## 0.4.1 zur Betrachtung der stetigen Parameter----
+### 0.4.1 zur Betrachtung der stetigen Parameter----
 stetig <- function(column){
   a <- enquo(column)
   n_studie_med <- df %>% group_by(Study, !!a) %>% summarise(n = n(), .groups = "drop") %>% group_by(Study) %>% summarise(n = n()) %>% summarise(m = median(n))
@@ -38,85 +40,90 @@ stetig_plot <- function(column){
   return(list(p_studie, p_Land))
 }
 
-## 0.5 Berechnen der Modelle----
-### 0.5.1 lmer----
-lmer_model_nloptwrap <- lmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df,
-                   control = lmerControl(optCtrl = list(maxfun = 100000)))
+### 0.4.2 Caterpillarplots fuer glmmTMB zum Vergleich zweier Modelle----
+### Input:
+#### mod: glmmTMB Modell 1
+#### mod2: glmmTMB Modell 2
+#### j: Welche Random Effecte?
+##### j = 1: Country
+##### j = 2: Experiment:Study
+##### j = 3: Study
 
-lmer_model_nerlder <- lmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df,
-                        control = lmerControl(optCtrl = list(optimizer = "Nelder Mead", maxfun = 100000)))
+### Output:
+#### caterpillarplot
 
-lmer_model_bobyqa <- lmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df,
-                           control = lmerControl(optCtrl = list(optimizer = "Nelder Mead", maxfun = 100000)))
+### To Do:
+#### Hinzufuegen der KIs, welche bisher aufgrund von NA nicht berechnet werden koennen.
 
-lmer_model_nlminbwrap <- lmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df,
-                          control = lmerControl(optCtrl = list(optimizer = "nlminbwrap", maxfun = 100000)))
-
-
-### 0.5.2 glmer----
-glmer_bin.model_nloptwrap <- glmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df, family = binomial(link = "logit"),
-                                weights = sample_size, control = glmerControl(optimizer = "nloptwrap", optCtrl = list(maxfun = 100000)))
-
-
-glmer_bin.model_nelder <- glmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df, family = binomial(link = "logit"),
-                         weights = sample_size, control = glmerControl(optimizer = "Nelder_Mead", optCtrl = list(maxfun = 100000)))
-
-glmer_bin.model_bobyqa <- glmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df, family = binomial(link = "logit"),
-                                weights = sample_size, control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 100000)))
-
-glmer_bin.model_nlminbwrap <- glmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df, family = binomial(link = "logit"),
-                                weights = sample_size, control = glmerControl(optimizer = "nlminbwrap", optCtrl = list(maxfun = 100000)))
-
-### 0.5.3 glmmTMB----
-df$quality_adj <- NA
-df$quality_adj <- ifelse(df$quality == 0, .0001, df$quality)
-df$quality_adj[df$quality == 1] <- 0.999
-glmmTMB_beta.model <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names[-55], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df, family = glmmTMB::beta_family(link = "logit"),
-                         control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size)
-
-glmmTMB_normal.model <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1 | Country) + (1 | Study/experiment)")), data = df, family = gaussian(),
-                                       control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size)
-
-glmmTMB_beta.model <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1 | Language) + (1 | Study) + (1|experiment)")), data = df, family = glmmTMB::beta_family(link = "logit"),
-                                       control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), profile = TRUE, collect = FALSE))
-
-glmmTMB_normal.model <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1 | Language) + (1 | Study) + (1|experiment)")), data = df, family = gaussian(),
-                                         control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), profile = TRUE, collect = FALSE))
-
-DHARMa::simulateResiduals(glmmTMB_beta.model, plot = T)
-DHARMa::simulateResiduals(glmmTMB_normal.model, plot = T)
-
-### 0.5.2 GLMMadaptive----
-GLMMadaptive::mixed_model(as.formula(paste("quality ~", paste(model_names, collapse = " + "))), random = ~ 1 | Country / Study / experiment, family = GLMMadaptive::beta.fam(), optimizer = "nlminb",
-                          iter_qN_incr = 20, nAGQ = 21, data = df)
-
-
-# Reproduzierbares Beispiel
-set.seed(12345)
-a <- sample(c(0,1), 1000, replace = T)
-df1 <- data.frame(a = a,
-                  b = ifelse(a == 1, sample(c(0,1)), NA))
-df1$b_gifi_eins <- ifelse(!is.na(df1$b) & df1$b == 1, 1, 0)
-df1$b_gifi_null <- ifelse(!is.na(df1$b) & df1$b == 0, 1, 0)
-df1$out <- rbeta(1000, 1, 1)
-
-m <- glmmTMB::glmmTMB(out ~ b_gifi_eins + b_gifi_null + a, data = df1, family = glmmTMB::beta_family(link = "logit"))
-m1 <- glmmTMB::glmmTMB(out ~ b_gifi_null + a, data = df1, family = glmmTMB::beta_family(link = "logit")) 
-m2 <- glmmTMB::glmmTMB(out ~ b_gifi_null + a, data = df1, family = gaussian())
-# 1. Diagnostics nach Buch----
-## 1.1 Caterpillar plot----
+caterp <- function(mod, mod2 = NULL, j){
+  if(is.null(mod2)){
+    t <- ranef(mod)$cond
+    for(i in 1:length(t)){
+      t[[i]]$names <- rownames(t[[i]])
+      t[[i]]$mod <- 1
+    }  
+    v <- t[[j]] %>% arrange(`(Intercept)`) %>% mutate(names = factor(names, levels = names))
+    v %>%
+      ggplot(aes(x = names, y = `(Intercept)`, color = names))+
+      geom_point(show.legend = F)+
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  }
+  if(!is.null(mod2)){
+  t <- ranef(mod)$cond
+  for(i in 1:length(t)){
+    t[[i]]$names <- rownames(t[[i]])
+    t[[i]]$mod <- 1
+  }
+  
+  u <- ranef(mod2)$cond
+  for(i in 1:length(u)){
+    u[[i]]$names <- rownames(u[[i]])
+    u[[i]]$mod <- 2
+  }
+  v <- rbind(t[[j]] %>% arrange(`(Intercept)`) %>% mutate(names = factor(names, levels = names))
+             , u[[j]] %>% arrange(`(Intercept)`) %>% mutate(names = factor(names, levels = names))
+  )
+  
+  v %>%
+    ggplot(aes(x = names, y = `(Intercept)`, color = names))+
+    geom_point(show.legend = F)+
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+    facet_wrap(~mod)
+  }
+  
+  # Fuer spaeter:
+  ## Covarianz der random effekte:
+  # sqrt(TMB::sdreport(mod_glmmTMB_beta_full_non.reml$obj,getJointPrecision=TRUE)$diag.cov.random)
+}
 
 
+### 0.4.3 Caterpillarplots fuer mehrere glms----
 
+function(df = df, all.vars = T){
+  contr_name <- unique(df$Country)
+  ifelse(all.vars == T, model_names = model_names, model_names = model_names_nondich)
+  for(i in 1:length(unique(df$Country))){
+    glmmTMB::glmmTMB(as.formula(paste("quality ~", paste(model_names, collapse = " + "))), data = df %>% filter(df$Country == contr_name[i]), family = glmmTMB::beta_family(link = "logit"))
+  }
+  glmmTMB::glmmTMB(as.formula(paste("quality ~", paste0(model_names, collapse = " + "))), data = df %>% filter(df$Country == contr_name[1]), family = glmmTMB::beta_family(link = "logit"))
+}
+test <- glmmTMB::glmmTMB(as.formula(paste("quality ~", paste0(model_names[1:30], collapse = " + "))), data = df %>% filter(df$Country == "Austria"), family = glmmTMB::beta_family(link = "logit"))
 
 
 
 
+# 1. QQ und Residuen----
+## 1.1 glmmTMB----
+### 1.1.1 Volles Modell----
+DHARMa::simulateResiduals(mod_glmmTMB_beta_full_non.reml, plot = T)
+
+### 1.1.2 Ohne dichotome GIFI Variablen----
+DHARMa::simulateResiduals(mod_glmmTMB_beta_sub_non.reml, plot = T)
+
+# 2. 
+?ranef()
 
 
-
-#random = ~1 | Study,family = beta.fam(),iter_EM = 0, optimizer = "nlminb",
-#initial_values = list(betas = GLMMadaptive_question1$coefficients, D = matrix(c(0.5, 0, 0, 0.1), 2, 2)),iter_qN_incr = 20,nAGQ = 21, data = df
 
 
 
