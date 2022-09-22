@@ -126,20 +126,41 @@ save(mod_glmmTMB_beta_full_non.reml, mod_glmmTMB_beta_sub_non.reml, file = "C:/U
 #
 #
 ## Reproduzierbares Beispiel
-#set.seed(12345)
-#a <- sample(c(0,1), 1000, replace = T)
-#df1 <- data.frame(a = a,
-#                  b = ifelse(a == 1, sample(c(0,1)), NA))
-#df1$b_gifi_eins <- ifelse(!is.na(df1$b) & df1$b == 1, 1, 0)
-#df1$b_gifi_null <- ifelse(!is.na(df1$b) & df1$b == 0, 1, 0)
-#df1$out <- rbeta(1000, 1, 1)
-#
-#m <- glmmTMB::glmmTMB(out ~ b_gifi_eins + b_gifi_null + a, data = df1, family = glmmTMB::beta_family(link = "logit"))
-#m1 <- glmmTMB::glmmTMB(out ~ b_gifi_null + a, data = df1, family = glmmTMB::beta_family(link = "logit")) 
-#m2 <- glmmTMB::glmmTMB(out ~ b_gifi_null + a, data = df1, family = gaussian())
+### Seed zur Reproduzierbarkeit
+set.seed(12345)
 
+### Kovariablen und Einfuehrungen in Filter
+a.f <- sample(c(0,1), 1000, replace = T) # "normale" kovariable
+b.f <- sample(c(0,1), 1000, replace = T) # Einfuehrung in ersten Filter (1. Filter)
+c.f <- sample(0:3, 1000, replace = T) # Einfuehrung in zweiten Filter (2. Filter)
+d <- sample(0:5, 1000, replace = T) # Random Effekt
+e <- sample(0:10, 1000, replace = T) # genesteter Random Effekt in d ( d/e )
 
+df1 <- data.frame(a.f = a.f,
+                  b.f = b.f,
+                  b.1 = ifelse(b.f == 1, sample(c(0,1)), NA),  # Kovariable im ersten Filter
+                  c.f = c.f,
+                  c.1 = ifelse(c.f == 2 | c.f == 3, sample(c(0,1)), NA), # Kovariable im zweiten Filter
+                  d = d)
 
+### GIFI kodierung
+##### Fuer Kovariable im ersten Filter
+df1$b.1_1 <- ifelse(!is.na(df1$b.1) & df1$b.1 == 1, 1, 0)
+df1$b.1_0 <- ifelse(!is.na(df1$b.1) & df1$b.1 == 0, 1, 0)
+
+##### Fuer Kovariable im zweiten Filter
+df1$c.1_1 <- ifelse(!is.na(df1$c.1) & df1$c.1 == 1, 1, 0)
+df1$c.1_0 <- ifelse(!is.na(df1$c.1) & df1$c.1 == 0, 1, 0)
+
+### Outcome
+df1$out <- rbeta(1000, 1, 1)
+
+### Modell mit GIFI-kodierung
+m <- glmmTMB::glmmTMB(out ~ a.f + b.f + c.f + b.1_1 + b.1_0 + c.1_1 + c.1_0 + (1|d/e),
+                      data = df1, family = glmmTMB::beta_family(link = "logit"))
+
+summary(m)
+TMB::sdreport(m,getJointPrecision=TRUE)
 
 
 
