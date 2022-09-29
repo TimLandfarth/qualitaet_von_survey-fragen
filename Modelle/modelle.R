@@ -9,69 +9,81 @@ library(glmmTMB)
 load("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Aufbereitung/data.RData")
 
 ## 0.3 Für Betaverteilung: setzen von quality = 0 auf quality = 0.00001, da x \in (0,1) (gleiches bei 1)
-df$quality_adj <- df$quality
-df$quality_adj[df$quality == 0] <-  .00001
-df$quality_adj[df$quality == 1] <- 0.99999
-df$Study[which(!(df$Study %in% c(paste("ESS Round",1:7))))] <- "Other"
 
-# 1. Modelle----
+# 1. Qualitaet----
 ## 1.1 LMMs ----
 ### 1.1.1 lme4----
-##### 1.1.1.1 Mit allen Kovariablen----
-mod_lme4_gauss_full_reml <- lme4::lmer(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df, REML = T, weight = sample_size, 
+mod_lme4_gauss_q <- lme4::lmer(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df, REML = F, weight = sample_size_stand, 
                                        control = lmerControl(optCtrl = list(maxfun = 100000)))
-mod_lme4_gauss_full_non.reml <- lme4::lmer(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df, REML = F, weight = sample_size,
-                                           control = lmerControl(optCtrl = list(maxfun = 100000, maxit = 100000), optimizer = "bobyqa"))
+
+plot(mod_lme4_gauss_q)
+##### Fuer weitere Berechnungen mittels anderen Schätzern:
+#lmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df,
+#     control = lmerControl(optCtrl = list(optimizer = "Nelder Mead", maxfun = 100000)))
+
+### 1.1.2 glmmTMB----
+mod_glmmTMB_gauss_q <- glmmTMB::glmmTMB(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+                                                control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size_stand, REML = F)
+
+DHARMa::plotQQunif(mod_glmmTMB_gauss_q, plot = T, testUniformity = F, testOutliers = F, testDispersion = F)
+## 1.2 GLMMs----
+### 1.2.1 Beta----
+#### 1.2.1.1 glmmTMB----
+mod_glmmTMB_beta_q <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+                                                   control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size_stand, REML = F,
+                                                   family = glmmTMB::beta_family(link = "logit"))
+
+DHARMa::plotQQunif(mod_glmmTMB_beta_q, plot = T, testUniformity = F, testOutliers = F, testDispersion = F)
+
+# 2. Validitaet----
+## 2.1 LMMs ----
+### 2.1.1 lme4----
+mod_lme4_gauss_v <- lme4::lmer(as.formula(paste("validity ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df, REML = F, weight = sample_size_stand, 
+                             control = lmerControl(optCtrl = list(maxfun = 100000)))
 
 ##### Fuer weitere Berechnungen mittels anderen Schätzern:
 #lmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df,
 #     control = lmerControl(optCtrl = list(optimizer = "Nelder Mead", maxfun = 100000)))
 
-##### 1.1.1.2 Ohne dichotome GIFI Variablen----
-mod_lme4_gauss_sub_reml <- lme4::lmer(as.formula(paste("quality ~", paste(model_names_nondich[-52], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df, REML = T, weight = sample_size,
-                                      control = lmerControl(optCtrl = list(maxfun = 100000)))
-mod_lme4_gauss_sub_non.reml <- lme4::lmer(as.formula(paste("quality ~", paste(model_names_nondich[-52], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df, REML = F, weight = sample_size,
-                                          control = lmerControl(optCtrl = list(maxfun = 100000)))
+### 2.1.2 glmmTMB----
+mod_glmmTMB_gauss_v <- glmmTMB::glmmTMB(as.formula(paste("validity ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+                                      control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size_stand, REML = F)
 
-### 1.1.2 glmmTMB----
-#### 1.1.2.1 Mit allen Kovariablen----
-mod_glmmTMB_gauss_full_reml <- glmmTMB::glmmTMB(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df,
-                                       control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size, REML = T)
+## 2.2 GLMMs----
+### 2.2.1 Beta----
+#### 2.2.1.1 glmmTMB----
+mod_glmmTMB_beta_v <- glmmTMB::glmmTMB(as.formula(paste("validity_adj ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+                                     control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size_stand, REML = F,
+                                     family = glmmTMB::beta_family(link = "logit"))
 
-mod_glmmTMB_gauss_full_non.reml <- glmmTMB::glmmTMB(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df,
-                                                control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size, REML = F)
+# 3. Reliabilitaet----
+## 3.1 LMMs ----
+### 3.1.1 lme4----
+mod_lme4_gauss_r <- lme4::lmer(as.formula(paste("reliability ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df, REML = F, weight = sample_size_stand, 
+                               control = lmerControl(optCtrl = list(maxfun = 100000)))
 
-#### 1.1.2.2 Ohne dichotome GIGI Variablen----
-mod_glmmTMB_gauss_sub_reml <- glmmTMB::glmmTMB(as.formula(paste("quality ~", paste(model_names_nondich[-52], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df,
-                                                    control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size, REML = T)
+##### Fuer weitere Berechnungen mittels anderen Schätzern:
+#lmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df,
+#     control = lmerControl(optCtrl = list(optimizer = "Nelder Mead", maxfun = 100000)))
 
-mod_glmmTMB_gauss_sub_non.reml <- glmmTMB::glmmTMB(as.formula(paste("quality ~", paste(model_names_nondich[-52], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df,
-                                               control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size, REML = F)
+### 3.1.2 glmmTMB----
+mod_glmmTMB_gauss_r <- glmmTMB::glmmTMB(as.formula(paste("reliability ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+                                        control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size_stand, REML = F)
 
-## 1.2 GLMMs----
-### 1.2.1 Beta----
-#### 1.2.1.1 glmmTMB----
-#### 1.1.2.1 Mit allen Kovariablen----
-mod_glmmTMB_beta_full_reml <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names[-55], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df,
-                                                control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size, 
-                                               family = glmmTMB::beta_family(link = "logit"))
+## 3.2 GLMMs----
+### 3.2.1 Beta----
+#### 3.2.1.1 glmmTMB----
+mod_glmmTMB_beta_r <- glmmTMB::glmmTMB(as.formula(paste("reliability_adj ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+                                       control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size_stand, REML = F,
+                                       family = glmmTMB::beta_family(link = "logit"))
 
-mod_glmmTMB_beta_full_non.reml <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names[-55], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df,
-                                                    control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size, REML = F,
-                                                   family = glmmTMB::beta_family(link = "logit"))
-
-#### 1.1.2.2 Ohne dichotome GIFI Variablen----
-mod_glmmTMB_beta_sub_reml <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names_nondich[-52], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df,
-                                               control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size, REML = T,
-                                              family = glmmTMB::beta_family(link = "logit"))
-
-mod_glmmTMB_beta_sub_non.reml <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names_nondich[-52], collapse = " + "), " + (1 | Country) + (1|Study/experiment)")), data = df,
-                                                   control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size, REML = F,
-                                                  family = glmmTMB::beta_family(link = "logit"))
 
 
 # 2. Speichern----
-save(mod_glmmTMB_beta_full_non.reml, mod_glmmTMB_beta_sub_non.reml, file = "C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Modelle/modelle.RData")
+save(mod_glmmTMB_beta_q, mod_glmmTMB_beta_r, mod_glmmTMB_beta_v,
+     mod_glmmTMB_gauss_q, mod_glmmTMB_gauss_r, mod_glmmTMB_gauss_v,
+     mod_lme4_gauss_q, mod_lme4_gauss_r, mod_lme4_gauss_v,
+     file = "C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Modelle/modelle.RData")
 
 # 3. Alte Version----
 #lmer_model_nloptwrap <- lmer(paste("quality ~", paste(model_names[c(1:54, 56:59)], collapse = " + "), "+ (1|Country) + (1|Study) + (1|experiment)"), data = df,
@@ -125,6 +137,79 @@ save(mod_glmmTMB_beta_full_non.reml, mod_glmmTMB_beta_sub_non.reml, file = "C:/U
 #                          iter_qN_incr = 20, nAGQ = 21, data = df)
 #
 #
+
+glmmTMB_question1 <-
+  glmmTMB(
+    quality ~ Domain + Concept + Social.Desirability + Centrality + Reference.period +
+      Formulation.of.the.request.for.an.answer..basic.choice + WH.word.used.in.the.request_used +
+      Request.for.an.answer.type_Declar. + Request.for.an.answer.type_Imper. +
+      Request.for.an.answer.type_Inter. + Use.of.gradation_No +
+      Use.of.gradation_Yes + Balance.of.the.request_Balanced +
+      Presence.of.encouragement.to.answer_No +
+      Emphasis.on.subjective.opinion.in.request_No +
+      Use.of.stimulus.or.statement.in.the.request +
+      Absolute.or.comparative.judgment + Response.scale..basic.choice +
+      Number.of.categories + Theoretical.range.of.the.concept.bipolar.unipolar_bipolar +
+      Range.of.the.used.scale.bipolar.unipolar_Bipolar +
+      Symmetry.of.response.scale_Asymmetric +
+      Neutral.category_Not.present +
+      Number.of.fixed.reference.points + Don.t.know.option + Interviewer.instruction + Respondent.instruction +
+      Extra.information.or.definition + Knowledge.provided_Definitions + Knowledge.provided_Other +
+      Knowledge.provided_No + Knowledge.provided_def..and.other + Introduction.available. +
+      Request.present.in.the.introduction_present +
+      Number.of.sentences.in.introduction + Number.of.words.in.introduction + Number.of.sentences.in.introduction +
+      Number.of.sentences.in.the.request + Number.of.words.in.request + Total.number.of.nouns.in.request.for.an.answer +
+      Total.number.of.abstract.nouns.in.request.for.an.answer + Total.number.of.syllables.in.request +
+      Number.of.subordinate.clauses.in.request + Number.of.syllables.in.answer.scale + Total.number.of.nouns.in.answer.scale +
+      Total.number.of.abstract.nouns.in.answer.scale +
+      Showcard.or.other.visual.aids.used +
+      Horizontal.or.vertical.scale_Horizontal +
+      Overlap.of.scale.labels.and.categories_clearly.connected +
+      Numbers.or.letters.before.the.answer.categories_Neither +
+      Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes + Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers +
+      Start.of.the.response.sentence.on.the.visual.aid_No +
+      Request.on.the.visual.aid_No + Request.on.the.visual.aid_Yes + Picture.provided._No +
+      Computer.assisted + Interviewer + Visual.or.oral.presentation + Position + (1 | Language) + (1 | Study / experiment),
+    family = beta_family(link = "logit"),
+    control = glmmTMBControl(
+      optCtrl = list(iter.max = 20000, eval.max = 20000),
+      profile = TRUE,
+      collect = FALSE
+    ),
+    weights = sample_size,
+    data = df
+  )
+
+t <- c("Domain" , "Concept" , "Social.Desirability" , "Centrality" , "Reference.period" ,
+  "Formulation.of.the.request.for.an.answer..basic.choice" , "WH.word.used.in.the.request_used" ,
+  "Request.for.an.answer.type_Declar." , "Request.for.an.answer.type_Imper." ,
+  "Request.for.an.answer.type_Inter." , "Use.of.gradation_No" ,
+  "Use.of.gradation_Yes" , "Balance.of.the.request_Balanced" ,
+  "Presence.of.encouragement.to.answer_No" ,
+  "Emphasis.on.subjective.opinion.in.request_No" ,
+  "Use.of.stimulus.or.statement.in.the.request" ,
+  "Absolute.or.comparative.judgment" , "Response.scale..basic.choice" ,
+  "Number.of.categories" , "Theoretical.range.of.the.concept.bipolar.unipolar_bipolar" ,
+  "Range.of.the.used.scale.bipolar.unipolar_Bipolar" ,
+  "Symmetry.of.response.scale_Asymmetric" ,
+  "Neutral.category_Not.present" ,
+  "Number.of.fixed.reference.points" , "Don.t.know.option" , "Interviewer.instruction" , "Respondent.instruction" ,
+  "Extra.information.or.definition" , "Knowledge.provided_Definitions", "Knowledge.provided_Other" ,
+  "Knowledge.provided_No" , "Knowledge.provided_def..and.other" , "Introduction.available." ,
+  "Request.present.in.the.introduction_present" ,
+  "Number.of.sentences.in.introduction" , "Number.of.words.in.introduction" , "Number.of.sentences.in.introduction" ,
+  "Number.of.sentences.in.the.request" , "Number.of.words.in.request" , "Total.number.of.nouns.in.request.for.an.answer" ,
+  "Total.number.of.abstract.nouns.in.request.for.an.answer" , "Total.number.of.syllables.in.request" ,
+  "Number.of.subordinate.clauses.in.request" , "Number.of.syllables.in.answer.scale" , "Total.number.of.nouns.in.answer.scale" ,
+  "Total.number.of.abstract.nouns.in.answer.scale" ,
+  "Showcard.or.other.visual.aids.used" ,
+  "Horizontal.or.vertical.scale_Horizontal" ,
+  "Overlap.of.scale.labels.and.categories_clearly.connected" ,
+  "Numbers.or.letters.before.the.answer.categories_Neither" ,
+  "Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes" , "Scale.with.only.numbers.or.numbers.in.boxes_Only.numbers" ,
+  "Start.of.the.response.sentence.on.the.visual.aid_No" ,
+  "Request.on.the.visual.aid_No" , "Request.on.the.visual.aid_Yes" , "Picture.provided._No" ,
+  "Computer.assisted" , "Interviewer", "Visual.or.oral.presentation", "Position")
 ## Reproduzierbares Beispiel
 ### Seed zur Reproduzierbarkeit
 set.seed(12345)
@@ -156,8 +241,11 @@ df1$c.1_0 <- ifelse(!is.na(df1$c.1) & df1$c.1 == 0, 1, 0)
 df1$out <- rbeta(1000, 1, 1)
 
 ### Modell mit GIFI-kodierung
-m <- glmmTMB::glmmTMB(out ~ a.f + b.f + c.f + b.1_1 + b.1_0 + c.1_1 + c.1_0 + (1|d/e),
+m <- glmmTMB::glmmTMB(out ~ a.f + b.f + c.f + b.1_1 + b.1_0 + c.1_1 + c.1_0 + (1|e) + (1|d),
                       data = df1, family = glmmTMB::beta_family(link = "logit"))
+
+predict(m, df1, re.form = NULL)[1:10]
+
 
 summary(m)
 TMB::sdreport(m,getJointPrecision=TRUE)
