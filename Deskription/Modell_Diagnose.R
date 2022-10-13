@@ -82,10 +82,9 @@ diskret_plot <- function(column){
 caterp <- function(mod, mod2 = NULL, j){
   if(is.null(mod2)){
     t <- ranef(mod)$cond
-    s <- TMB::sdreport(mod[["obj"]], getJointPrecision = T)$diag.cov.random
-    t[[1]]$sd <- s[1:length(t[[1]])]
-    t[[2]]$sd <- s[1:length(t[[2]])]
-    t[[3]]$sd <- s[1:length(t[[3]])]
+    t[[1]]$sd <- rep(sqrt(summary(mod)$varcor$cond$Language[1]), length(t[[1]]))
+    t[[2]]$sd <- rep(sqrt(summary(mod)$varcor$cond$`experiment:Study`[1]), length(t[[2]]))
+    t[[3]]$sd <- rep(sqrt(summary(mod)$varcor$cond$Study[1]), length(t[[2]]))
     #return(t)
     t[[1]]$cmax <- t[[1]]$`(Intercept)` + 1.96 * t[[1]]$sd
     t[[2]]$cmax <- t[[2]]$`(Intercept)` + 1.96 * t[[2]]$sd
@@ -139,20 +138,6 @@ caterp <- function(mod, mod2 = NULL, j){
 
 ### 0.4.3 Residuen vs. Kovariablen----
 ##### Designmatrix muss selbst berechnet werden, da keine Funktion vorhanden
-
-X_fix <- model.matrix(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "))), df)
-X_fix <- X_fix[,which((colnames(X_fix) %in% names(fixef(mod_lme4_gauss_q))))]
-y_Xbetahat <- as.vector(df$quality) - X_fix %*% as.vector(fixef(mod_lme4_gauss_q))
-Xbeta <- test %*% as.vector(fixef(mod_lme4_gauss_q))
-
-resid_marginal <- resid(mod_lme4_gauss_q, level = 0)
-resididi <- resid(mod_glmmTMB_gauss_q, level = 0)
-
-y_Xbetahat[1:10]
-resid_marginal[1:10]
-resididi[1:10]
-
-df$res <- y_Xbetahat
 
 res_cov_plot <- function(mod, columns, continuous = FALSE, with.quality = FALSE, lme = FALSE, val = "quality"){
   out <- df[[val]]
@@ -221,9 +206,9 @@ res_cov_plot <- function(mod, columns, continuous = FALSE, with.quality = FALSE,
 qqnorm(resid(mod_lme4_gauss_q))
 
 ## 1.1.2 glmmTMB----
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/QQ plot.pdf", width = 8, height = 5) 
-DHARMa::plotQQunif(mod_glmmTMB_gauss_q, plot = T, testUniformity = F, testOutliers = F, testDispersion = F)
-#dev.off()
+pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/QQ plot.pdf", width = 8, height = 5) 
+DHARMa::plotQQunif(mod_glmmTMB_beta_q, plot = T, testUniformity = F, testOutliers = F, testDispersion = F)
+dev.off()
 
 #pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residual plot.pdf", width = 8, height = 5) 
 DHARMa::plotQQunif(mod_glmmTMB_beta_q, plot = T, testUniformity = F, testOutliers = F, testDispersion = F)
@@ -249,13 +234,12 @@ DHARMa::plotQQunif(mod_glmmTMB_beta_v, plot = T, testUniformity = F, testOutlier
 
 # 2. Residuen plots----
 ## 2.1 Qualitaet----
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen stetig 1.pdf", width = 10, height = 6.25) 
 res_cov_plot(mod_glmmTMB_gauss_q, Position, continuous = T)
 res_cov_plot(mod_lme4_gauss_q, Position, continuous = T, lme = T)
+#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen stetig 1.pdf", width = 10, height = 6.25) 
 res_cov_plot(mod_glmmTMB_beta_q, Position, continuous = T)
 #dev.off()
 
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen stetig 2.pdf", width = 10, height = 6.25) 
 res_cov_plot(mod_glmmTMB_gauss_q,
   c(
     Number.of.syllables.in.answer.scale,
@@ -274,6 +258,7 @@ res_cov_plot(mod_lme4_gauss_q,
              ),
              continuous = T, lme = T
 )
+pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen stetig 2.pdf", width = 10, height = 6.25) 
 res_cov_plot(mod_glmmTMB_beta_q,
              c(
                Number.of.syllables.in.answer.scale,
@@ -283,10 +268,9 @@ res_cov_plot(mod_glmmTMB_beta_q,
              ),
              continuous = T
              )
-#dev.off()
+dev.off()
 
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen stetig 3.pdf", width = 10, height = 6.25) 
-p1 <- res_cov_plot(
+res_cov_plot(
   mod_glmmTMB_gauss_q,
   c(
     Number.of.categories,
@@ -318,7 +302,8 @@ p2 <- res_cov_plot(
   continuous = T, lme = TRUE
 )
 
-p3 <- res_cov_plot(
+pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen stetig 3.pdf", width = 10, height = 6.25) 
+res_cov_plot(
   mod_glmmTMB_beta_q,
   c(
     Number.of.categories,
@@ -333,11 +318,9 @@ p3 <- res_cov_plot(
   ,
   continuous = T
 )
-grid.arrange(p1,p2,p3,ncol = 3)
-#dev.off()
+dev.off()
 
 #### 1.1.2.2 Diskrete Effekte----
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 1.pdf", width = 10, height = 6.25) 
 res_cov_plot(mod_glmmTMB_beta_q,
   c(
     Domain,
@@ -360,6 +343,7 @@ res_cov_plot(mod_lme4_gauss_q,
   ), lme = TRUE
 )
 
+pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 1.pdf", width = 10, height = 6.25) 
 res_cov_plot(mod_glmmTMB_beta_q,
                    c(
                      Domain,
@@ -370,9 +354,8 @@ res_cov_plot(mod_glmmTMB_beta_q,
                      Formulation.of.the.request.for.an.answer..basic.choice
                    )
 )
-#dev.off()
+dev.off()
 
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 2.pdf", width = 10, height = 6.25) 
 res_cov_plot(mod_glmmTMB_gauss_q,
   c(
     Use.of.gradation_No,
@@ -393,6 +376,8 @@ res_cov_plot(mod_lme4_gauss_q,
                WH.word.used.in.the.request_used
              ), lme = TRUE
 )
+
+pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 2.pdf", width = 10, height = 6.25) 
 res_cov_plot(mod_glmmTMB_beta_q,
              c(
                Use.of.gradation_No,
@@ -403,11 +388,10 @@ res_cov_plot(mod_glmmTMB_beta_q,
                WH.word.used.in.the.request_used
              )
 )
-
-#dev.off()
+dev.off()
 
 pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 4.pdf", width = 10, height = 6.25) 
-res_cov_plot(
+res_cov_plot(mod_glmmTMB_beta_q,
   c(
     Balance.of.the.request_Balanced,
     Presence.of.encouragement.to.answer_Yes,
@@ -420,7 +404,7 @@ res_cov_plot(
 dev.off()
 
 pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 5.pdf", width = 10, height = 6.25) 
-res_cov_plot(
+res_cov_plot(mod_glmmTMB_beta_q,
   c(
     Response.scale..basic.choice,
     Range.of.the.used.scale.bipolar.unipolar_Unipolar,
@@ -433,7 +417,7 @@ res_cov_plot(
 dev.off()
 
 pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 6.pdf", width = 10, height = 6.25) 
-res_cov_plot(
+res_cov_plot(mod_glmmTMB_beta_q,
   c(
     Respondent.instruction,
     Extra.information.or.definition,
@@ -446,7 +430,7 @@ res_cov_plot(
 dev.off()
 
 pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 7.pdf", width = 10, height = 6.25) 
-res_cov_plot(
+res_cov_plot(mod_glmmTMB_beta_q,
   c(
     Introduction.available.,
     Request.present.in.the.introduction_present,
@@ -459,7 +443,7 @@ res_cov_plot(
 dev.off()
 
 pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 8.pdf", width = 10, height = 6.25) 
-res_cov_plot(
+res_cov_plot(mod_glmmTMB_beta_q,
   c(
     Numbers.or.letters.before.the.answer.categories_Numbers,
     Scale.with.only.numbers.or.numbers.in.boxes_Numbers.in.boxes,
@@ -472,7 +456,7 @@ res_cov_plot(
 dev.off()
 
 pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuen diskret 9.pdf", width = 10, height = 6.25) 
-res_cov_plot(
+res_cov_plot(mod_glmmTMB_beta_q,
   c(
     Interviewer,
     Visual.or.oral.presentation
@@ -480,40 +464,41 @@ res_cov_plot(
 )
 dev.off()
 
-
-names(fixef(mod_glmmTMB_beta_full_non.reml_lang)$cond)
-
-
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuals continuous covariates 1.pdf", width = 10, height = 6.25) 
-res_cov_1
-#dev.off()
-
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Residuals continuous covariates 2.pdf", width = 10, height = 6.25) 
-res_cov_2
-#dev.off()
-
-as.vector(fixef(mod_glmmTMB_beta_full_non.reml_lang)$cond)
-predict(mod_glmmTMB_beta_full_non.reml_lang, level = 0)
-
-
 # 2. Caterpillarplot----
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Caterpillarplots RndIntercept Language.pdf", width = 10, height = 6.25) 
-caterp(mod_glmmTMB_beta_q, j = 1)
+pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Caterpillarplots RndIntercept Language.pdf", width = 10, height = 6.25)
+p <- caterp(mod_glmmTMB_beta_q, j = 1)
+
+
+s <- TMB::sdreport(mod_glmmTMB_beta_q[["obj"]])$diag.cov.random
+
+q <- ggplot(data = data.frame(x = rnorm(100000, sd = 0.2153)),aes(x = x))+
+  geom_density(fill = "blue", alpha = .5)+
+  scale_y_continuous()+
+  scale_x_continuous(limits = c(-1.5,1.5), n.breaks = 6)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))+
+  labs(x = "", y = "Density")+
+  coord_flip()
+
+cowplot::plot_grid(p,q,align = "h", ncol = 2, rel_widths = c(3/4, 1/4))
+
+dev.off()
+
 caterp(mod_glmmTMB_gauss_q, j = 1)
-#dev.off()
 
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Caterpillarplots RndIntercept Study.Experiment.pdf", width = 10, height = 6.25) 
+pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Caterpillarplots RndIntercept Study.Experiment.pdf", width = 10, height = 6.25) 
 caterp(mod_glmmTMB_beta_q, j = 2)
-#dev.off()
+dev.off()
 
-#pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Caterpillarplots RndIntercept Study.pdf", width = 10, height = 6.25) 
+pdf("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet_von_survey-fragen/Plots/Diagnostik/Caterpillarplots RndIntercept Study.pdf", width = 10, height = 6.25) 
 caterp(mod_glmmTMB_beta_q, j = 3)
-#dev.off()
+dev.off()
 
 
 
 # 3. Residuen----
-residualz <- data.frame(res = residuals(mod_glmmTMB_beta_full_non.reml_lang),
+
+
+residualz <- data.frame(res = residuals(mod_glmmTMB_beta_q),
                         Study = df$Study,
                         experiment = df$experiment,
                         Language = df$Language)
