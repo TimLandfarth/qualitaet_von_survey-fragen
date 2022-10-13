@@ -13,7 +13,7 @@ load("C:/Uni/13. Semester/Praktikum/github qualitaet_von_survey-fragen/qualitaet
 # 1. Qualitaet----
 ## 1.1 LMMs ----
 ### 1.1.1 lme4----
-mod_lme4_gauss_q <- lme4::lmer(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df, REML = F, weight = sample_size_stand, 
+mod_lme4_gauss_q <- lme4::lmer(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1|Study/Language/experiment)")), data = df, REML = F, weight = sample_size_stand, 
                                        control = lmerControl(optCtrl = list(maxfun = 100000)))
 
 plot(mod_lme4_gauss_q)
@@ -22,23 +22,24 @@ plot(mod_lme4_gauss_q)
 #     control = lmerControl(optCtrl = list(optimizer = "Nelder Mead", maxfun = 100000)))
 
 ### 1.1.2 glmmTMB----
-mod_glmmTMB_gauss_q <- glmmTMB::glmmTMB(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+mod_glmmTMB_gauss_q <- glmmTMB::glmmTMB(as.formula(paste("quality ~", paste(model_names[-55], collapse = " + "), " + (1|Study/Language/experiment)")), data = df,
                                                 control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size_stand, REML = F)
 
 DHARMa::plotQQunif(mod_glmmTMB_gauss_q, plot = T, testUniformity = F, testOutliers = F, testDispersion = F)
 ## 1.2 GLMMs----
 ### 1.2.1 Beta----
 #### 1.2.1.1 glmmTMB----
-mod_glmmTMB_beta_q <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+mod_glmmTMB_beta_q <- glmmTMB::glmmTMB(as.formula(paste("quality_adj ~", paste(model_names[-55], collapse = " + "), " + (1|Study/Language/experiment)")), data = df,
                                                    control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size_stand, REML = F,
                                                    family = glmmTMB::beta_family(link = "logit"))
+
 
 DHARMa::plotQQunif(mod_glmmTMB_beta_q, plot = T, testUniformity = F, testOutliers = F, testDispersion = F)
 
 # 2. Validitaet----
 ## 2.1 LMMs ----
 ### 2.1.1 lme4----
-mod_lme4_gauss_v <- lme4::lmer(as.formula(paste("validity ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df, REML = F, weight = sample_size_stand, 
+mod_lme4_gauss_v <- lme4::lmer(as.formula(paste("validity ~", paste(model_names[-55], collapse = " + "), " + (1|Study/Language/experiment)")), data = df, REML = F, weight = sample_size_stand, 
                              control = lmerControl(optCtrl = list(maxfun = 100000)))
 
 ##### Fuer weitere Berechnungen mittels anderen Schätzern:
@@ -46,20 +47,20 @@ mod_lme4_gauss_v <- lme4::lmer(as.formula(paste("validity ~", paste(model_names[
 #     control = lmerControl(optCtrl = list(optimizer = "Nelder Mead", maxfun = 100000)))
 
 ### 2.1.2 glmmTMB----
-mod_glmmTMB_gauss_v <- glmmTMB::glmmTMB(as.formula(paste("validity ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+mod_glmmTMB_gauss_v <- glmmTMB::glmmTMB(as.formula(paste("validity ~", paste(model_names[-55], collapse = " + "), " + (1|Study/Language/experiment)")), data = df,
                                       control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size_stand, REML = F)
 
 ## 2.2 GLMMs----
 ### 2.2.1 Beta----
 #### 2.2.1.1 glmmTMB----
-mod_glmmTMB_beta_v <- glmmTMB::glmmTMB(as.formula(paste("validity_adj ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+mod_glmmTMB_beta_v <- glmmTMB::glmmTMB(as.formula(paste("validity_adj ~", paste(model_names[-55], collapse = " + "), " + (1|Study/Language/experiment)")), data = df,
                                      control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size_stand, REML = F,
                                      family = glmmTMB::beta_family(link = "logit"))
 
 # 3. Reliabilitaet----
 ## 3.1 LMMs ----
 ### 3.1.1 lme4----
-mod_lme4_gauss_r <- lme4::lmer(as.formula(paste("reliability ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df, REML = F, weight = sample_size_stand, 
+mod_lme4_gauss_r <- lme4::lmer(as.formula(paste("reliability ~", paste(model_names[-55], collapse = " + "), " + (1|Study/Language/experiment)")), data = df, REML = F, weight = sample_size_stand, 
                                control = lmerControl(optCtrl = list(maxfun = 100000)))
 
 ##### Fuer weitere Berechnungen mittels anderen Schätzern:
@@ -67,13 +68,13 @@ mod_lme4_gauss_r <- lme4::lmer(as.formula(paste("reliability ~", paste(model_nam
 #     control = lmerControl(optCtrl = list(optimizer = "Nelder Mead", maxfun = 100000)))
 
 ### 3.1.2 glmmTMB----
-mod_glmmTMB_gauss_r <- glmmTMB::glmmTMB(as.formula(paste("reliability ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+mod_glmmTMB_gauss_r <- glmmTMB::glmmTMB(as.formula(paste("reliability ~", paste(model_names[-55], collapse = " + "), " + (1|Study/Language/experiment)")), data = df,
                                         control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 20000,eval.max = 20000), collect = FALSE), weights = sample_size_stand, REML = F)
 
 ## 3.2 GLMMs----
 ### 3.2.1 Beta----
 #### 3.2.1.1 glmmTMB----
-mod_glmmTMB_beta_r <- glmmTMB::glmmTMB(as.formula(paste("reliability_adj ~", paste(model_names[-55], collapse = " + "), " + (1 | Language) + (1|Study/experiment)")), data = df,
+mod_glmmTMB_beta_r <- glmmTMB::glmmTMB(as.formula(paste("reliability_adj ~", paste(model_names[-55], collapse = " + "), " + (1|Study/Language/experiment)")), data = df,
                                        control = glmmTMB::glmmTMBControl(optCtrl = list(iter.max = 200000,eval.max = 200000), collect = FALSE), weights = sample_size_stand, REML = F,
                                        family = glmmTMB::beta_family(link = "logit"))
 
